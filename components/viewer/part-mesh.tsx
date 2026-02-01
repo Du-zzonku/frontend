@@ -5,12 +5,14 @@ import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import type { ThreeEvent } from '@react-three/fiber';
-import type { ModelPart } from '@/lib/types';
+import type { ModelPart, Vector3, Quaternion } from '@/lib/types';
 
 interface PartMeshProps {
   part: ModelPart;
-  position: [number, number, number];
+  position: Vector3;
   rotation?: [number, number, number];
+  quaternion?: Quaternion;
+  scale?: Vector3;
   color: string;
   isSelected: boolean;
   onClick: () => void;
@@ -22,6 +24,8 @@ export function PartMesh({
   part,
   position,
   rotation,
+  quaternion,
+  scale,
   color,
   isSelected,
   onClick,
@@ -69,17 +73,36 @@ export function PartMesh({
     }
   }, [clonedScene, color, isSelected, isHovered]);
 
-  // Animate position and rotation smoothly
+  // Target quaternion for smooth interpolation
+  const targetQuat = useMemo(() => {
+    if (quaternion) {
+      return new THREE.Quaternion(quaternion[0], quaternion[1], quaternion[2], quaternion[3]);
+    }
+    return null;
+  }, [quaternion]);
+
+  // Animate position, rotation, and scale smoothly
   useFrame((_, delta) => {
     if (groupRef.current) {
+      // Position lerp
       groupRef.current.position.x += (position[0] - groupRef.current.position.x) * delta * 5;
       groupRef.current.position.y += (position[1] - groupRef.current.position.y) * delta * 5;
       groupRef.current.position.z += (position[2] - groupRef.current.position.z) * delta * 5;
 
-      if (rotation) {
+      // Quaternion slerp (if provided)
+      if (targetQuat) {
+        groupRef.current.quaternion.slerp(targetQuat, delta * 5);
+      } else if (rotation) {
         groupRef.current.rotation.x += (rotation[0] - groupRef.current.rotation.x) * delta * 5;
         groupRef.current.rotation.y += (rotation[1] - groupRef.current.rotation.y) * delta * 5;
         groupRef.current.rotation.z += (rotation[2] - groupRef.current.rotation.z) * delta * 5;
+      }
+
+      // Scale lerp (if provided)
+      if (scale) {
+        groupRef.current.scale.x += (scale[0] - groupRef.current.scale.x) * delta * 5;
+        groupRef.current.scale.y += (scale[1] - groupRef.current.scale.y) * delta * 5;
+        groupRef.current.scale.z += (scale[2] - groupRef.current.scale.z) * delta * 5;
       }
     }
   });

@@ -3,8 +3,17 @@
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import type * as THREE from 'three';
-import type { Model } from '@/lib/types';
+import type { Model, PartInstance, Vector3, Quaternion } from '@/lib/types';
 import { PartMesh } from './part-mesh';
+
+interface InstancedPart {
+  key: string;
+  partId: string;
+  glbPath: string;
+  position: Vector3;
+  rotation?: Quaternion;
+  scale?: Vector3;
+}
 
 interface ModelViewerProps {
   model: Model;
@@ -30,19 +39,47 @@ export function ModelViewer({
     }
   });
 
-  // Calculate positions based on base position and explode value
-  const partPositions = useMemo(() => {
-    return model.parts.map((part) => {
-      const explodeFactor = explodeValue / 100;
-      return {
-        id: part.id,
-        position: [
-          part.basePosition[0] + part.explodeOffset[0] * explodeFactor,
-          part.basePosition[1] + part.explodeOffset[1] * explodeFactor,
-          part.basePosition[2] + part.explodeOffset[2] * explodeFactor,
-        ] as [number, number, number],
-      };
-    });
+  // Build instanced parts with calculated positions
+  const instancedParts = useMemo(() => {
+    const result: InstancedPart[] = [];
+    const explodeFactor = explodeValue / 100;
+
+    for (const part of model.parts) {
+      // instances가 있으면 각 인스턴스별로 처리
+      if (part.instances && part.instances.length > 0) {
+        for (const inst of part.instances) {
+          const position: Vector3 = [
+            inst.position[0] + inst.explodeDir[0] * inst.explodeDistance * explodeFactor,
+            inst.position[1] + inst.explodeDir[1] * inst.explodeDistance * explodeFactor,
+            inst.position[2] + inst.explodeDir[2] * inst.explodeDistance * explodeFactor,
+          ];
+          result.push({
+            key: inst.nodeId,
+            partId: part.id,
+            glbPath: part.glbPath,
+            position,
+            rotation: inst.rotation,
+            scale: inst.scale,
+          });
+        }
+      } else {
+        // 기존 방식 (basePosition, explodeOffset)
+        const basePos = part.basePosition || [0, 0, 0];
+        const explodeOff = part.explodeOffset || [0, 0, 0];
+        const position: Vector3 = [
+          basePos[0] + explodeOff[0] * explodeFactor,
+          basePos[1] + explodeOff[1] * explodeFactor,
+          basePos[2] + explodeOff[2] * explodeFactor,
+        ];
+        result.push({
+          key: part.id,
+          partId: part.id,
+          glbPath: part.glbPath,
+          position,
+        });
+      }
+    }
+    return result;
   }, [model.parts, explodeValue]);
 
   // Generate unique colors for parts
@@ -66,20 +103,21 @@ export function ModelViewer({
 
   return (
     <group ref={groupRef}>
-      {model.parts.map((part) => {
-        const positionData = partPositions.find((p) => p.id === part.id);
-        const position = positionData?.position || [0, 0, 0];
+      {instancedParts.map((inst) => {
+        const part = model.parts.find((p) => p.id === inst.partId)!;
         
         return (
           <PartMesh
-            key={part.id}
+            key={inst.key}
             part={part}
-            position={position}
+            position={inst.position}
             rotation={part.baseRotation}
-            color={partColors[part.id]}
-            isSelected={selectedPartId === part.id}
-            onClick={() => onPartClick(part.id)}
-            onPointerOver={() => onPartHover(part.id)}
+            quaternion={inst.rotation}
+            scale={inst.scale}
+            color={partColors[inst.partId]}
+            isSelected={selectedPartId === inst.partId}
+            onClick={() => onPartClick(inst.partId)}
+            onPointerOver={() => onPartHover(inst.partId)}
             onPointerOut={() => onPartHover(null)}
           />
         );

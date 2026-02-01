@@ -3,7 +3,8 @@
 import { cn } from '@/lib/utils';
 import type { Model, ModelPart } from '@/lib/types';
 import { ExplodeSlider } from './explode-slider';
-import { X, Box, Layers, Wrench, Play } from 'lucide-react';
+import { PartThumbnail } from './part-thumbnail';
+import { X, Layers, Wrench, Play, Box } from 'lucide-react';
 
 interface LeftSidebarProps {
   model: Model;
@@ -66,27 +67,15 @@ export function LeftSidebar({
             </button>
           </div>
 
-          {/* Parts thumbnail grid */}
+          {/* Parts thumbnail grid - 3D model previews */}
           <div className="grid grid-cols-2 gap-2">
             {model.parts.slice(0, 4).map((part) => (
-              <button
+              <PartThumbnail
                 key={part.id}
+                part={part}
+                isSelected={selectedPartId === part.id}
                 onClick={() => onPartSelect(part.id)}
-                className={cn(
-                  'aspect-square rounded-lg bg-secondary/50 flex items-center justify-center transition-all',
-                  'hover:bg-secondary border border-transparent',
-                  selectedPartId === part.id && 'border-primary bg-primary/10'
-                )}
-              >
-                <Box
-                  className={cn(
-                    'w-5 h-5',
-                    selectedPartId === part.id
-                      ? 'text-primary'
-                      : 'text-muted-foreground'
-                  )}
-                />
-              </button>
+              />
             ))}
           </div>
         </div>

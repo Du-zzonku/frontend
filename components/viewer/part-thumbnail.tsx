@@ -2,7 +2,7 @@
 
 import { Suspense, useMemo, useRef, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useGLTF, Center, OrbitControls } from '@react-three/drei';
+import { useGLTF, Center } from '@react-three/drei';
 import * as THREE from 'three';
 import type { ModelPart } from '@/lib/types';
 
@@ -14,11 +14,28 @@ interface ThumbnailModelProps {
 function ThumbnailModel({ glbPath, isSelected }: ThumbnailModelProps) {
   const { scene } = useGLTF(glbPath);
   const groupRef = useRef<THREE.Group>(null);
+  const materialsRef = useRef<Map<THREE.Mesh, THREE.MeshStandardMaterial>>(new Map());
   const { camera } = useThree();
 
-  // Clone the scene
+  // Clone the scene and store original materials
   const clonedScene = useMemo(() => {
     const cloned = scene.clone();
+    
+    // Clone materials once and store them
+    cloned.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        const originalMaterial = child.material as THREE.MeshStandardMaterial;
+        if (originalMaterial) {
+          const newMaterial = new THREE.MeshStandardMaterial({
+            metalness: 0.6,
+            roughness: 0.4,
+          });
+          child.material = newMaterial;
+          materialsRef.current.set(child, newMaterial);
+        }
+      }
+    });
+    
     return cloned;
   }, [scene]);
 
@@ -36,28 +53,15 @@ function ThumbnailModel({ glbPath, isSelected }: ThumbnailModelProps) {
     }
   }, [clonedScene, camera]);
 
-  // Apply material
+  // Update material colors based on isSelected
   useEffect(() => {
-    if (clonedScene) {
-      clonedScene.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          const material = child.material as THREE.MeshStandardMaterial;
-          if (material) {
-            child.material = material.clone();
-            const newMaterial = child.material as THREE.MeshStandardMaterial;
-            newMaterial.color = new THREE.Color(isSelected ? '#00d4ff' : '#8892b0');
-            newMaterial.metalness = 0.6;
-            newMaterial.roughness = 0.4;
-
-            if (isSelected) {
-              newMaterial.emissive = new THREE.Color('#00d4ff');
-              newMaterial.emissiveIntensity = 0.3;
-            }
-          }
-        }
-      });
-    }
-  }, [clonedScene, isSelected]);
+    materialsRef.current.forEach((material) => {
+      material.color.set(isSelected ? '#00d4ff' : '#8892b0');
+      material.emissive.set(isSelected ? '#00d4ff' : '#000000');
+      material.emissiveIntensity = isSelected ? 0.3 : 0;
+      material.needsUpdate = true;
+    });
+  }, [isSelected]);
 
   // Slow rotation animation
   useFrame((_, delta) => {

@@ -10,25 +10,25 @@
     {
       "partId": "BASE",
       "displayNameKo": "베이스",
-      "glbUrl": "/glb/BASE.glb",
+      "glbUrl": "/models/Suspension/BASE.glb",
       "summary": "하부 지지/마운트 역할"
     },
     {
       "partId": "ROD",
       "displayNameKo": "로드",
-      "glbUrl": "/glb/ROD.glb",
+      "glbUrl": "/models/Suspension/ROD.glb",
       "summary": "중심 축(댐퍼 로드) 역할"
     },
     {
       "partId": "SPRING",
       "displayNameKo": "스프링",
-      "glbUrl": "/glb/SPRING.glb",
+      "glbUrl": "/models/Suspension/SPRING.glb",
       "summary": "하중을 지지하고 탄성력을 제공"
     },
     {
       "partId": "NIT",
       "displayNameKo": "상부 부품(NIT)",
-      "glbUrl": "/glb/NIT.glb",
+      "glbUrl": "/models/Suspension/NIT.glb",
       "summary": "상부 시트/캡 역할(샘플 명칭 기준)"
     }
   ],

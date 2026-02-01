@@ -1,6 +1,9 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { Header } from '@/components/header';
 import { ModelCard } from '@/components/model-card';
-import { models } from '@/lib/models-data';
+import { fetchModels, type ModelSummary } from '@/lib/api';
 import Link from 'next/link';
 import { 
   Cpu, 
@@ -16,10 +19,30 @@ import {
   MessageSquare,
   Target,
   Users,
-  Lightbulb
+  Lightbulb,
+  Loader2
 } from 'lucide-react';
 
 export default function HomePage() {
+  const [models, setModels] = useState<ModelSummary[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadModels() {
+      try {
+        const data = await fetchModels();
+        setModels(data);
+      } catch (err) {
+        console.error('Failed to fetch models:', err);
+        setError('모델 목록을 불러오는데 실패했습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadModels();
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -390,11 +413,22 @@ export default function HomePage() {
               </p>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {models.map((model) => (
-                <ModelCard key={model.id} model={model} />
-              ))}
-            </div>
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                <span className="ml-3 text-muted-foreground">모델을 불러오는 중...</span>
+              </div>
+            ) : error ? (
+              <div className="text-center py-12">
+                <p className="text-destructive">{error}</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {models.map((model) => (
+                  <ModelCard key={model.modelId} model={model} />
+                ))}
+              </div>
+            )}
             
             <div className="text-center mt-12">
               <Link

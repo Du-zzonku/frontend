@@ -10,25 +10,25 @@
     {
       "partId": "CRANKSHAFT",
       "displayNameKo": "크랭크샤프트",
-      "glbUrl": "/glb/Crankshaft.glb",
+      "glbUrl": "/models/V4_Engine/Crankshaft.glb",
       "summary": "엔진의 중심 축, 회전 동력을 전달"
     },
     {
       "partId": "PISTON",
       "displayNameKo": "피스톤",
-      "glbUrl": "/glb/Piston.glb",
+      "glbUrl": "/models/V4_Engine/Piston.glb",
       "summary": "실린더 내부를 왕복하며 압력을 전달"
     },
     {
       "partId": "CONNECTING_ROD",
       "displayNameKo": "커넥팅 로드",
-      "glbUrl": "/glb/Connecting Rod.glb",
+      "glbUrl": "/models/V4_Engine/Connecting Rod.glb",
       "summary": "피스톤과 크랭크샤프트를 연결"
     },
     {
       "partId": "CONNECTING_ROD_CAP",
       "displayNameKo": "로드 캡",
-      "glbUrl": "/glb/Connecting Rod Cap.glb",
+      "glbUrl": "/models/V4_Engine/Connecting Rod Cap.glb",
       "summary": "커넥팅 로드를 크랭크 핀에 고정"
     }
   ],

@@ -128,61 +128,25 @@ export const handlers = [
     return HttpResponse.json(data);
   }),
 
-  // POST /api/models/:id/chat - AI 질의 (스트리밍 mock)
+  // POST /api/models/:id/chat - AI 질의
   http.post('/api/models/:id/chat', async ({ params, request }) => {
-    await delay(200);
+    // 0.4초 delay
+    await delay(400);
 
     const modelId = params.id as string;
     const body = (await request.json()) as {
-      messages: Array<{ role: string; content: string }>;
-      partId?: string;
+      message: string;
+      history: string[];
     };
-    const lastMessage =
-      body.messages?.[body.messages.length - 1]?.content || '';
 
-    // Get system prompt for the model
-    const systemPrompt =
-      systemPrompts[modelId] ||
-      '당신은 SIMVEX의 공학 교육 어시스턴트입니다. 한국어로 친절하게 답변해주세요.';
-
-    // Generate mock response based on the question
-    let mockResponse = '';
-
-    if (lastMessage.includes('역할') || lastMessage.includes('기능')) {
-      mockResponse = `해당 부품은 조립체에서 중요한 역할을 합니다. 구조적 지지와 기능적 연결을 담당하며, 다른 부품들과 함께 전체 시스템의 작동을 가능하게 합니다.`;
-    } else if (lastMessage.includes('재질') || lastMessage.includes('소재')) {
-      mockResponse = `일반적으로 이런 부품은 강도와 내구성이 요구되어 강철이나 알루미늄 합금으로 제작됩니다. 특수한 경우 탄소섬유나 티타늄 합금이 사용되기도 합니다.`;
-    } else if (lastMessage.includes('조립') || lastMessage.includes('분해')) {
-      mockResponse = `조립/분해 시에는 정해진 순서를 따르는 것이 중요합니다. 먼저 고정 부품을 배치한 후, 연결 부품을 순차적으로 조립합니다. 분해는 역순으로 진행합니다.`;
-    } else {
-      mockResponse = `좋은 질문입니다! ${systemPrompt.split('\n')[0]} 이 모델에 대해 더 궁금한 점이 있으시면 언제든 질문해주세요.`;
+    // 모델이 존재하지 않으면 404
+    if (!mockDataMap[modelId]) {
+      return HttpResponse.json({ error: 'Model not found' }, { status: 404 });
     }
 
-    // Create SSE stream response
-    const encoder = new TextEncoder();
-    const stream = new ReadableStream({
-      async start(controller) {
-        // Send response in chunks to simulate streaming
-        const chunks = mockResponse.split(' ');
-        for (const chunk of chunks) {
-          const data = JSON.stringify({
-            type: 'text-delta',
-            delta: chunk + ' ',
-          });
-          controller.enqueue(encoder.encode(`data: ${data}\n\n`));
-          await delay(30);
-        }
-        controller.enqueue(encoder.encode('data: [DONE]\n\n'));
-        controller.close();
-      },
-    });
-
-    return new HttpResponse(stream, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        Connection: 'keep-alive',
-      },
+    // 단순 mock 응답
+    return HttpResponse.json({
+      content: '[AI 답변내용]',
     });
   }),
 

@@ -143,21 +143,13 @@ export default function StudyPage({ params }: PageProps) {
       setIsAiLoading(true);
 
       try {
-        // Build messages array for API
-        const messages = [
-          ...aiHistory.map((m) => ({
-            role: m.role as 'user' | 'assistant',
-            content: m.content,
-          })),
-          { role: 'user' as const, content: message },
-        ];
+        // Extract history: 이전 사용자 질문들만 추출
+        const history = aiHistory
+          .filter((m) => m.role === 'user')
+          .map((m) => m.content);
 
-        // Call the new API endpoint
-        const response = await sendChatMessage(
-          modelId,
-          messages,
-          selectedPart?.id
-        );
+        // Call the API with new format
+        const response = await sendChatMessage(modelId, message, history);
 
         // Add assistant message
         if (response) {
@@ -174,7 +166,7 @@ export default function StudyPage({ params }: PageProps) {
         setIsAiLoading(false);
       }
     },
-    [model, modelId, aiHistory, selectedPart, addChatMessage]
+    [model, modelId, aiHistory, addChatMessage]
   );
 
   const handleSearchSubmit = (query: string) => {

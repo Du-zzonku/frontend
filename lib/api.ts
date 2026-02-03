@@ -54,56 +54,31 @@ export async function fetchViewerData(modelId: string): Promise<ModelData> {
   return response.json();
 }
 
+/** AI 채팅 응답 타입 */
+export interface ChatResponse {
+  content: string;
+}
+
 /**
- * POST /api/models/:id/chat - AI 채팅 (스트리밍)
- * 스트리밍 응답을 처리하여 전체 텍스트를 반환
+ * POST /api/models/:id/chat - AI 채팅
  */
 export async function sendChatMessage(
   modelId: string,
-  messages: ChatMessage[],
-  partId?: string
+  message: string,
+  history: string[]
 ): Promise<string> {
   const response = await fetch(`/api/models/${modelId}/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages, partId }),
+    body: JSON.stringify({ message, history }),
   });
 
   if (!response.ok) {
     throw new Error(`Chat API error: ${response.status}`);
   }
 
-  // Read streaming response
-  const reader = response.body?.getReader();
-  const decoder = new TextDecoder();
-  let fullContent = '';
-
-  if (reader) {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      const chunk = decoder.decode(value, { stream: true });
-      // Parse SSE chunks
-      const lines = chunk.split('\n');
-      for (const line of lines) {
-        if (line.startsWith('data:')) {
-          const data = line.slice(5).trim();
-          if (data === '[DONE]') continue;
-          try {
-            const parsed = JSON.parse(data);
-            if (parsed.type === 'text-delta' && parsed.delta) {
-              fullContent += parsed.delta;
-            }
-          } catch {
-            // Skip invalid JSON
-          }
-        }
-      }
-    }
-  }
-
-  return fullContent;
+  const data: ChatResponse = await response.json();
+  return data.content;
 }
 
 /**

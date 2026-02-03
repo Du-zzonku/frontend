@@ -2,63 +2,63 @@
   "model": {
     "modelId": "robot_gripper",
     "title": "로봇 그리퍼 (Robot Gripper)",
-    "thumbnailUrl": "/models/Robot Gripper/로봇집게 조립도.png",
+    "thumbnailUrl": "/thumbs/robot_gripper.png",
     "overview": "기어-링크 메커니즘 기반의 로봇 그리퍼 조립/분해 시각화입니다. Blender에서 추출한 실제 3D 변환(위치/회전/스케일)을 그대로 사용합니다.",
-    "theory": "베이스 플레이트를 기준으로 기어가 링크를 구동하고, 링크 끝단의 그리퍼가 물체를 파지합니다."
+    "theory": "베이스 플레이트를 기준으로 기어가 링크를 구동하고, 링크 끝단의 그리퍼가 물체를 파지합니다. 본 데이터는 Three.js 좌표계(Y-up)에 맞춘 변환값을 그대로 적용합니다."
   },
   "parts": [
     {
-      "partId": "Base_Plate",
+      "partId": "Base Plate",
       "displayNameKo": "베이스 플레이트",
-      "glbUrl": "/models/Robot Gripper/Base Plate.glb",
+      "glbUrl": "/glb/Base Plate.glb",
       "summary": "전체 조립의 기준이 되는 하부 플레이트"
     },
     {
       "partId": "Base_Mounting_bracket",
       "displayNameKo": "마운팅 브래킷",
-      "glbUrl": "/models/Robot Gripper/Base Mounting bracket.glb",
+      "glbUrl": "/glb/Base_Mounting_bracket.glb",
       "summary": "플레이트에 체결되는 고정부(장착 브래킷)"
     },
     {
       "partId": "Base_Gear",
       "displayNameKo": "베이스 기어",
-      "glbUrl": "/models/Robot Gripper/Base Gear.glb",
+      "glbUrl": "/glb/Base_Gear.glb",
       "summary": "링크 구동을 전달하는 중심 기어(구동부)"
     },
     {
       "partId": "Gear_link_1",
       "displayNameKo": "기어 링크 1",
-      "glbUrl": "/models/Robot Gripper/Gear link 1.glb",
-      "summary": "기어의 회전을 링크로 전달하는 연결 부품(좌측)"
+      "glbUrl": "/glb/Gear_link_1.glb",
+      "summary": "기어의 회전을 링크로 전달하는 연결 부품(좌측 계열)"
     },
     {
       "partId": "Gear_link_2",
       "displayNameKo": "기어 링크 2",
-      "glbUrl": "/models/Robot Gripper/Gear link 2.glb",
-      "summary": "기어의 회전을 링크로 전달하는 연결 부품(우측)"
+      "glbUrl": "/glb/Gear_link_2.glb",
+      "summary": "기어의 회전을 링크로 전달하는 연결 부품(우측 계열)"
     },
     {
       "partId": "Link_1",
       "displayNameKo": "링크 1",
-      "glbUrl": "/models/Robot Gripper/Link.glb",
+      "glbUrl": "/glb/Link_1.glb",
       "summary": "기어 링크와 그리퍼를 연결하는 관절 링크(좌측)"
     },
     {
       "partId": "Link_2",
       "displayNameKo": "링크 2",
-      "glbUrl": "/models/Robot Gripper/Link.glb",
+      "glbUrl": "/glb/Link_2.glb",
       "summary": "기어 링크와 그리퍼를 연결하는 관절 링크(우측)"
     },
     {
       "partId": "Gripper_1",
       "displayNameKo": "그리퍼 1",
-      "glbUrl": "/models/Robot Gripper/Gripper.glb",
+      "glbUrl": "/glb/Gripper_1.glb",
       "summary": "물체를 파지하는 끝단 집게(좌측)"
     },
     {
       "partId": "Gripper_2",
       "displayNameKo": "그리퍼 2",
-      "glbUrl": "/models/Robot Gripper/Gripper.glb",
+      "glbUrl": "/glb/Gripper_2.glb",
       "summary": "물체를 파지하는 끝단 집게(우측)"
     }
   ],
@@ -74,6 +74,7 @@
       },
       "explode": { "dir": [0.0, 0.0, 0.0], "distance": 0.0 }
     },
+
     {
       "nodeId": "Base_Mounting_bracket_NODE",
       "partId": "Base_Mounting_bracket",
@@ -118,6 +119,7 @@
       },
       "explode": { "dir": [-0.01325, 0.99921, 0.03744], "distance": 0.35 }
     },
+
     {
       "nodeId": "Link_1_NODE",
       "partId": "Link_1",

@@ -1,0 +1,268 @@
+{
+  "model": {
+    "modelId": "drone",
+    "title": "드론 (Drone)",
+    "thumbnailUrl": "/models/Drone/조립도1.png",
+    "overview": "Blender Script로 자동 추출된 드론 조립(assembled) 좌표/회전/스케일 데이터를 그대로 사용합니다.",
+    "theory": "Three.js(Y-up)에서 parts의 glb를 로드한 뒤, nodes의 assembled(pos/quat/scale)를 그대로 적용해 조립 상태를 재현합니다. parentNodeId는 본체(Main_frame_front_NODE)를 기준으로 트리 구조를 구성합니다."
+  },
+  "parts": [
+    {
+      "partId": "Main_frame_front",
+      "displayNameKo": "메인 프레임 (상단)",
+      "glbUrl": "/models/Drone/Main frame.glb",
+      "summary": "드론 상단 프레임(본체 기준)"
+    },
+    {
+      "partId": "Main_frame_back",
+      "displayNameKo": "메인 프레임 (하단)",
+      "glbUrl": "/models/Drone/Main frame_MIR.glb",
+      "summary": "드론 하단 프레임(본체 하부)"
+    },
+    {
+      "partId": "Arm_gear_1",
+      "displayNameKo": "암 기어 1",
+      "glbUrl": "/models/Drone/Arm gear.glb",
+      "summary": "암 기어 (왼쪽 앞 대각선)"
+    },
+    {
+      "partId": "Arm_gear_2",
+      "displayNameKo": "암 기어 2",
+      "glbUrl": "/models/Drone/Arm gear.glb",
+      "summary": "암 기어 (오른쪽 앞 대각선)"
+    },
+    {
+      "partId": "Arm_gear_3",
+      "displayNameKo": "암 기어 3",
+      "glbUrl": "/models/Drone/Arm gear.glb",
+      "summary": "암 기어 (왼쪽 뒤 대각선)"
+    },
+    {
+      "partId": "Arm_gear_4",
+      "displayNameKo": "암 기어 4",
+      "glbUrl": "/models/Drone/Arm gear.glb",
+      "summary": "암 기어 (오른쪽 뒤 대각선)"
+    },
+    {
+      "partId": "Impellar_Blade_1",
+      "displayNameKo": "임펠러 블레이드 1",
+      "glbUrl": "/models/Drone/Impellar Blade.glb",
+      "summary": "임펠러 블레이드 (왼쪽 앞 대각선)"
+    },
+    {
+      "partId": "Impellar_Blade_2",
+      "displayNameKo": "임펠러 블레이드 2",
+      "glbUrl": "/models/Drone/Impellar Blade.glb",
+      "summary": "임펠러 블레이드 (오른쪽 앞 대각선)"
+    },
+    {
+      "partId": "Impellar_Blade_3",
+      "displayNameKo": "임펠러 블레이드 3",
+      "glbUrl": "/models/Drone/Impellar Blade.glb",
+      "summary": "임펠러 블레이드 (왼쪽 뒤 대각선)"
+    },
+    {
+      "partId": "Impellar_Blade_4",
+      "displayNameKo": "임펠러 블레이드 4",
+      "glbUrl": "/models/Drone/Impellar Blade.glb",
+      "summary": "임펠러 블레이드 (오른쪽 뒤 대각선)"
+    },
+    {
+      "partId": "Leg_1",
+      "displayNameKo": "다리 1",
+      "glbUrl": "/models/Drone/Leg.glb",
+      "summary": "다리 (왼쪽 앞 대각선)"
+    },
+    {
+      "partId": "Leg_2",
+      "displayNameKo": "다리 2",
+      "glbUrl": "/models/Drone/Leg.glb",
+      "summary": "다리 (오른쪽 앞 대각선)"
+    },
+    {
+      "partId": "Leg_3",
+      "displayNameKo": "다리 3",
+      "glbUrl": "/models/Drone/Leg.glb",
+      "summary": "다리 (왼쪽 뒤 대각선)"
+    },
+    {
+      "partId": "Leg_4",
+      "displayNameKo": "다리 4",
+      "glbUrl": "/models/Drone/Leg.glb",
+      "summary": "다리 (오른쪽 뒤 대각선)"
+    },
+    {
+      "partId": "Beater_disc",
+      "displayNameKo": "비터 디스크",
+      "glbUrl": "/models/Drone/Beater disc.glb",
+      "summary": "하부 디스크(회전체/커버 계열)"
+    }
+  ],
+  "nodes": [
+    {
+      "nodeId": "Main_frame_front_NODE",
+      "partId": "Main_frame_front",
+      "parentNodeId": null,
+      "assembled": {
+        "pos": [0.0, 0.0, 0.0],
+        "quat": [-0.70787, -0.0, 0.0, 0.70635],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "explode": { "dir": [0.0, 1.0, 0.0], "distance": 0.45 }
+    },
+    {
+      "nodeId": "Main_frame_back_NODE",
+      "partId": "Main_frame_back",
+      "parentNodeId": "Main_frame_front_NODE",
+      "assembled": {
+        "pos": [0.0, 0.0, 0.0],
+        "quat": [-0.70787, -0.0, 0.0, 0.70635],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "explode": { "dir": [0.0, -1.0, 0.0], "distance": 0.45 }
+    },
+    {
+      "nodeId": "Arm_gear_4_NODE",
+      "partId": "Arm_gear_4",
+      "parentNodeId": "Main_frame_front_NODE",
+      "assembled": {
+        "pos": [0.08887, -0.0116, 0.02931],
+        "quat": [0.0, 0.0, 0.0, 1.0],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "explode": { "dir": [0.7, 0.0, 0.7], "distance": 0.15 }
+    },
+    {
+      "nodeId": "Impellar_Blade_4_NODE",
+      "partId": "Impellar_Blade_4",
+      "parentNodeId": "Main_frame_front_NODE",
+      "assembled": {
+        "pos": [0.08835, 0.01105, 0.02963],
+        "quat": [0.0, -0.81329, 0.0, 0.58186],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "explode": { "dir": [0.7, 0.5, 0.7], "distance": 0.2 }
+    },
+    {
+      "nodeId": "Leg_4_NODE",
+      "partId": "Leg_4",
+      "parentNodeId": "Main_frame_front_NODE",
+      "assembled": {
+        "pos": [0.08867, -0.00044, 0.02939],
+        "quat": [-0.0, -0.91738, 0.0, 0.39801],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "explode": { "dir": [0.7, -0.3, 0.7], "distance": 0.18 }
+    },
+    {
+      "nodeId": "Leg_3_NODE",
+      "partId": "Leg_3",
+      "parentNodeId": "Main_frame_front_NODE",
+      "assembled": {
+        "pos": [-0.08738, -0.00044, 0.03179],
+        "quat": [0.0, 0.92706, -0.0, 0.37492],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "explode": { "dir": [-0.7, -0.3, 0.7], "distance": 0.18 }
+    },
+    {
+      "nodeId": "Impellar_Blade_3_NODE",
+      "partId": "Impellar_Blade_3",
+      "parentNodeId": "Main_frame_front_NODE",
+      "assembled": {
+        "pos": [-0.08762, 0.01105, 0.03146],
+        "quat": [0.0, 0.85418, -0.0, 0.51998],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "explode": { "dir": [-0.7, 0.5, 0.7], "distance": 0.2 }
+    },
+    {
+      "nodeId": "Arm_gear_3_NODE",
+      "partId": "Arm_gear_3",
+      "parentNodeId": "Main_frame_front_NODE",
+      "assembled": {
+        "pos": [-0.08731, -0.0116, 0.03199],
+        "quat": [-0.0, -0.71293, 0.0, 0.70124],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "explode": { "dir": [-0.7, 0.0, 0.7], "distance": 0.15 }
+    },
+    {
+      "nodeId": "Arm_gear_1_NODE",
+      "partId": "Arm_gear_1",
+      "parentNodeId": "Main_frame_front_NODE",
+      "assembled": {
+        "pos": [-0.08768, -0.0116, -0.1711],
+        "quat": [-0.0, 0.99999, -0.0, 0.00472],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "explode": { "dir": [-0.7, 0.0, -0.7], "distance": 0.15 }
+    },
+    {
+      "nodeId": "Impellar_Blade_1_NODE",
+      "partId": "Impellar_Blade_1",
+      "parentNodeId": "Main_frame_front_NODE",
+      "assembled": {
+        "pos": [-0.08715, 0.01105, -0.17141],
+        "quat": [0.0, 0.23976, -0.0, 0.97083],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "explode": { "dir": [-0.7, 0.5, -0.7], "distance": 0.2 }
+    },
+    {
+      "nodeId": "Leg_1_NODE",
+      "partId": "Leg_1",
+      "parentNodeId": "Main_frame_front_NODE",
+      "assembled": {
+        "pos": [-0.08748, -0.00044, -0.17118],
+        "quat": [0.0, 0.39368, -0.0, 0.91925],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "explode": { "dir": [-0.7, -0.3, -0.7], "distance": 0.18 }
+    },
+    {
+      "nodeId": "Arm_gear_2_NODE",
+      "partId": "Arm_gear_2",
+      "parentNodeId": "Main_frame_front_NODE",
+      "assembled": {
+        "pos": [0.07856, -0.0116, -0.17921],
+        "quat": [0.0, 0.76885, -0.0, 0.63943],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "explode": { "dir": [0.7, 0.0, -0.7], "distance": 0.15 }
+    },
+    {
+      "nodeId": "Impellar_Blade_2_NODE",
+      "partId": "Impellar_Blade_2",
+      "parentNodeId": "Main_frame_front_NODE",
+      "assembled": {
+        "pos": [0.07897, 0.01105, -0.17876],
+        "quat": [0.0, -0.4322, 0.0, 0.90178],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "explode": { "dir": [0.7, 0.5, -0.7], "distance": 0.2 }
+    },
+    {
+      "nodeId": "Leg_2_NODE",
+      "partId": "Leg_2",
+      "parentNodeId": "Main_frame_front_NODE",
+      "assembled": {
+        "pos": [0.07867, -0.00044, -0.17903],
+        "quat": [-0.0, -0.28059, 0.0, 0.95983],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "explode": { "dir": [0.7, -0.3, -0.7], "distance": 0.18 }
+    },
+    {
+      "nodeId": "Beater_disc_NODE",
+      "partId": "Beater_disc",
+      "parentNodeId": "Main_frame_front_NODE",
+      "assembled": {
+        "pos": [0.0, -0.0, -0.16595],
+        "quat": [-0.50237, 0.49762, -0.49782, 0.50217],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "explode": { "dir": [0.0, -0.5, -0.8], "distance": 0.25 }
+    }
+  ]
+}

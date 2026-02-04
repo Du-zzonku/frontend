@@ -8,7 +8,7 @@
   },
   "parts": [
     {
-      "partId": "Base Plate",
+      "partId": "Base_Plate",
       "displayNameKo": "베이스 플레이트",
       "glbUrl": "/models/Robot Gripper/Base Plate.glb",
       "summary": "전체 조립의 기준이 되는 하부 플레이트"

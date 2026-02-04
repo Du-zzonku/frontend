@@ -10,7 +10,7 @@ import {
   useState,
 } from 'react';
 
-import { ContactShadows, Environment, OrbitControls } from '@react-three/drei';
+import { ContactShadows, OrbitControls } from '@react-three/drei';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 
 import * as THREE from 'three';
@@ -208,8 +208,6 @@ function CanvasContent({
       />
       <directionalLight position={[-5, 5, -5]} intensity={0.3} />
       <pointLight position={[0, 5, 0]} intensity={0.5} color="#00d4ff" />
-
-      <Environment preset="city" />
 
       <Suspense fallback={<LoadingFallback />}>
         <ModelViewer

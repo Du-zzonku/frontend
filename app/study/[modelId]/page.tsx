@@ -2,6 +2,7 @@
 
 import { use, useCallback, useEffect, useState } from 'react';
 
+import dynamic from 'next/dynamic';
 import { notFound } from 'next/navigation';
 
 import { Loader2 } from 'lucide-react';
@@ -9,12 +10,28 @@ import { Loader2 } from 'lucide-react';
 import { Header } from '@/components/header';
 import { LeftSidebar } from '@/components/viewer/left-sidebar';
 import { RightSidebar } from '@/components/viewer/right-sidebar';
-import { Scene } from '@/components/viewer/scene';
 import { SearchBar } from '@/components/viewer/search-bar';
 import { fetchViewerData, sendChatMessage } from '@/lib/api';
 import { toViewerModel } from '@/lib/transform';
 import type { Model } from '@/lib/types';
 import { useViewerStore } from '@/store/viewer-store';
+
+// 동적 임포트: Three.js 관련 라이브러리를 필요할 때만 로드
+const Scene = dynamic(
+  () =>
+    import('@/components/viewer/scene').then((mod) => ({ default: mod.Scene })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-full flex items-center justify-center bg-[#070b14]">
+        <div className="flex items-center gap-3">
+          <Loader2 className="w-6 h-6 text-primary animate-spin" />
+          <span className="text-primary">3D 뷰어 로딩 중...</span>
+        </div>
+      </div>
+    ),
+  }
+);
 
 // System prompts for AI chat
 const systemPrompts: Record<string, string> = {

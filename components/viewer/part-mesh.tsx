@@ -71,6 +71,20 @@ export function PartMesh({
               newMaterial.emissiveIntensity = 0;
             }
           }
+
+          const existingEdges = child.children.find(
+            (c) => c.userData.isEdgeLine
+          );
+          if (!existingEdges && child.geometry) {
+            const edgesGeometry = new THREE.EdgesGeometry(child.geometry, 30);
+            const edgesMaterial = new THREE.LineBasicMaterial({
+              color: 0x000000,
+              linewidth: 1,
+            });
+            const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
+            edges.userData.isEdgeLine = true;
+            child.add(edges);
+          }
         }
       });
     }

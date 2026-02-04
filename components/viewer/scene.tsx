@@ -10,7 +10,7 @@ import {
   useState,
 } from 'react';
 
-import { ContactShadows, OrbitControls } from '@react-three/drei';
+import { ContactShadows, Environment, OrbitControls } from '@react-three/drei';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 
 import * as THREE from 'three';
@@ -199,14 +199,16 @@ function CanvasContent({
 }: CanvasContentProps) {
   return (
     <>
-      <ambientLight intensity={5} />
-      <directionalLight
-        position={[10, 10, 5]}
-        intensity={5}
+      <Environment preset="city" blur={0.8} environmentIntensity={0.3} />
+      <ambientLight intensity={1} />
+      
+      <directionalLight 
+        position={[-5, 5, -5]} 
+        intensity={1} 
         castShadow
         shadow-mapSize={[2048, 2048]}
-      />
-      <directionalLight position={[-5, 5, -5]} intensity={0.3} />
+        shadow-bias={-0.0001}/>
+
       <pointLight position={[0, 5, 0]} intensity={0.5} color="#00d4ff" />
 
       <Suspense fallback={<LoadingFallback />}>
@@ -220,12 +222,12 @@ function CanvasContent({
       </Suspense>
 
       <ContactShadows
-        position={[0, -0.1, 0]}
-        opacity={0.4}
-        scale={2}
-        blur={2}
-        far={1}
-        color="#00d4ff"
+        position={[0, -0.01, 0]}
+        opacity={0.6}
+        scale={10}
+        blur={2.5}
+        far={2}
+        color="#000000"
       />
 
       <ManualControls
@@ -235,7 +237,7 @@ function CanvasContent({
       />
 
       <gridHelper
-        args={[2, 20, '#1e3a5f', '#0d1f33']}
+        args={[20, 20, '#1e3a5f', '#0d1f33']}
         position={[0, -0.1, 0]}
       />
     </>
@@ -303,7 +305,7 @@ export function Scene({
 
       <Canvas
         camera={{ position: [1, 0.5, 1], fov: 50 }}
-        gl={{ antialias: true, alpha: true }}
+        gl={{ antialias: true, alpha: true , toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.5}}
         style={{ background: '#070b14' }}
       >
         <CanvasContent

@@ -2,7 +2,7 @@
   "model": {
     "modelId": "suspension",
     "title": "서스펜션 (Suspension)",
-    "thumbnailUrl": "/models/Suspension/서스펜션 조립도.png",
+    "thumbnailUrl": "/thumbs/suspension.png",
     "overview": "서스펜션 조립도/분해도를 통해 스프링-댐퍼 구조를 학습합니다.",
     "theory": "스프링은 하중을 지지하고, 댐퍼(로드)는 진동을 감쇠합니다. 실제 추출된 3D 좌표를 기반으로 구성 요소의 결합 위치를 확인합니다."
   },
@@ -11,25 +11,29 @@
       "partId": "BASE",
       "displayNameKo": "베이스",
       "glbUrl": "/models/Suspension/BASE.glb",
-      "summary": "하부 지지 및 마운트 역할"
-    },
-    {
-      "partId": "ROD",
-      "displayNameKo": "로드",
-      "glbUrl": "/models/Suspension/ROD.glb",
-      "summary": "서스펜션의 중심 축 (댐퍼)"
-    },
-    {
-      "partId": "SPRING",
-      "displayNameKo": "스프링",
-      "glbUrl": "/models/Suspension/SPRING.glb",
-      "summary": "충격 흡수 및 탄성 제공"
+      "summary": "하부 지지 및 마운트 역할",
+      "materialType": "METAL_STEEL_MACHINED"
     },
     {
       "partId": "NIT",
       "displayNameKo": "상부 캡(NIT)",
       "glbUrl": "/models/Suspension/NIT.glb",
-      "summary": "스프링과 로드를 고정하는 상부 부품"
+      "summary": "스프링과 로드를 고정하는 상부 부품",
+      "materialType": "METAL_CAST_ROUGH"
+    },
+    {
+      "partId": "ROD",
+      "displayNameKo": "로드",
+      "glbUrl": "/models/Suspension/ROD.glb",
+      "summary": "서스펜션의 중심 축 (댐퍼)",
+      "materialType": "METAL_STEEL_POLISHED"
+    },
+    {
+      "partId": "SPRING",
+      "displayNameKo": "스프링",
+      "glbUrl": "/models/Suspension/SPRING.glb",
+      "summary": "충격 흡수 및 탄성 제공",
+      "materialType": "METAL_STEEL_HEAT_TREATED"
     }
   ],
   "nodes": [
@@ -43,26 +47,8 @@
         "scale": [1, 1, 1]
       },
       "explode": {
-        "dir": [0.00787, 0.99966, -0.02478],
-        "distance": 0.41162,
-        "start": 0.0,
-        "duration": 0.3
-      }
-    },
-    {
-      "nodeId": "SPRING_NODE",
-      "partId": "SPRING",
-      "parentNodeId": "ROD_NODE",
-      "assembled": {
-        "pos": [0.0, 0.0, 0.0],
-        "quat": [0.0, 0.0, 0.0, 1],
-        "scale": [1, 1, 1]
-      },
-      "explode": {
-        "dir": [0.0, 1.0, 0.0],
-        "distance": 0.2,
-        "start": 0.3,
-        "duration": 0.3
+        "dir": [0, 1, 0],
+        "distance": 0.2
       }
     },
     {
@@ -71,14 +57,12 @@
       "parentNodeId": "ROD_NODE",
       "assembled": {
         "pos": [-0.00118, 0.00067, -0.0002],
-        "quat": [0.90183, 0.0, 0.43189, 0.01323],
+        "quat": [0.90183, 0, 0.43189, 0.01323],
         "scale": [1, 1, 1]
       },
       "explode": {
-        "dir": [-0.86031, 0.48848, -0.14581],
-        "distance": 0.2,
-        "start": 0.6,
-        "duration": 0.3
+        "dir": [0, 1, 0],
+        "distance": 0.1
       }
     },
     {
@@ -86,15 +70,27 @@
       "partId": "ROD",
       "parentNodeId": null,
       "assembled": {
-        "pos": [0.0, 0.0, 0.0],
-        "quat": [0.99989, -0.0, -0.01411, 0.00455],
+        "pos": [0, 0, 0],
+        "quat": [0.99989, 0, -0.01411, 0.00455],
         "scale": [1, 1, 1]
       },
       "explode": {
-        "dir": [0.0, 0.0, 0.0],
-        "distance": 0.0,
-        "start": 0.0,
-        "duration": 0.0
+        "dir": [0, 0, 0],
+        "distance": 0
+      }
+    },
+    {
+      "nodeId": "SPRING_NODE",
+      "partId": "SPRING",
+      "parentNodeId": "ROD_NODE",
+      "assembled": {
+        "pos": [0, 0, 0],
+        "quat": [0, 0, 0, 1],
+        "scale": [1, 1, 1]
+      },
+      "explode": {
+        "dir": [0, 1, 0],
+        "distance": 0.15
       }
     }
   ]

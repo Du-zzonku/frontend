@@ -64,30 +64,32 @@ export function PartMesh({
         if (child instanceof THREE.Mesh) {
           const material = child.material as THREE.MeshStandardMaterial;
           if (material) {
-            // Clone material to avoid affecting other instances
             child.material = material.clone();
             const newMaterial = child.material as THREE.MeshStandardMaterial;
 
-            // Apply preset or fallback color
             const baseColor = materialType ? materialConfig.color : color;
             newMaterial.color = new THREE.Color(baseColor);
             newMaterial.metalness = materialConfig.metalness;
             newMaterial.roughness = materialConfig.roughness;
 
-            // Handle vertex colors if specified
             if (materialConfig.vertexColors !== undefined) {
               newMaterial.vertexColors = materialConfig.vertexColors;
             }
 
-            // Apply emissive effect based on selection/hover
+            // 선택/호버 상태에 따른 발광 효과
             if (isSelected) {
-              newMaterial.emissive = new THREE.Color('#00d4ff');
-              newMaterial.emissiveIntensity = 0.5;
+              // 전체적으로 밝게 빛나는 효과
+              newMaterial.color.set('#55ddff');
+              newMaterial.emissive.set('#00ccff');
+              newMaterial.emissiveIntensity = 3.0;
+              newMaterial.metalness = 0.0;
+              newMaterial.roughness = 1.0;
+              newMaterial.toneMapped = false;
             } else if (isHovered) {
-              newMaterial.emissive = new THREE.Color('#00d4ff');
-              newMaterial.emissiveIntensity = 0.3;
+              newMaterial.emissive.set('#00d4ff');
+              newMaterial.emissiveIntensity = 0.8;
             } else {
-              newMaterial.emissive = new THREE.Color('#000000');
+              newMaterial.emissive.set('#000000');
               newMaterial.emissiveIntensity = 0;
             }
           }

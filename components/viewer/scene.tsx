@@ -262,12 +262,12 @@ function CanvasContent({
         shadow-bias={-0.0001}
         shadow-normalBias={0.04}
       />
-      <spotLight 
-        position={[5, 0, -5]} 
-        intensity={1.5} 
-        angle={0.5} 
-        penumbra={1} 
-        color="#ffffff" 
+      <spotLight
+        position={[5, 0, -5]}
+        intensity={1.5}
+        angle={0.5}
+        penumbra={1}
+        color="#ffffff"
       />
 
       <pointLight position={[0, 5, 0]} intensity={0.5} color="#00d4ff" />

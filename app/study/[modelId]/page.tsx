@@ -211,7 +211,6 @@ export default function StudyPage({ params }: PageProps) {
       <Header />
 
       <div className="flex-1 flex overflow-hidden">
-        {/* 좌측 패널 - 20% */}
         <div className="w-[20%] min-w-[200px] max-w-[320px]">
           <StudyLeftPanel
             model={model}
@@ -224,18 +223,16 @@ export default function StudyPage({ params }: PageProps) {
           />
         </div>
 
-        {/* 중앙 3D 뷰어 - 50% */}
         <main className="flex-1 relative min-w-[400px]">
           <Scene
             model={model}
             explodeValue={explodeValue}
-            selectedPartId={selectedPartId || hoveredPartId}
+            selectedPartId={selectedPartId}
             onPartClick={setSelectedPartId}
             onPartHover={setHoveredPartId}
             onExplodeChange={setExplodeValue}
           />
 
-          {/* Part Info Tooltip */}
           {hoveredPartId && !selectedPartId && (
             <PartTooltip
               part={model.parts.find((p) => p.id === hoveredPartId)!}
@@ -243,7 +240,6 @@ export default function StudyPage({ params }: PageProps) {
           )}
         </main>
 
-        {/* 우측 패널 - 20% */}
         <div className="w-[20%] min-w-[200px] max-w-[320px]">
           <StudyRightPanel
             model={model}

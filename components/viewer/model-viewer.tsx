@@ -129,7 +129,7 @@ export function ModelViewer({
             color={partColors[inst.partId]}
             materialType={part.materialType}
             isSelected={selectedPartId === inst.partId}
-            onClick={() => onPartClick(inst.partId)}
+            onClick={() => onPartClick(selectedPartId === inst.partId ? null : inst.partId)}
             onPointerOver={() => onPartHover(inst.partId)}
             onPointerOut={() => onPartHover(null)}
           />

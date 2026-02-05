@@ -251,15 +251,23 @@ function CanvasContent({
 }: CanvasContentProps) {
   return (
     <>
-      <Environment preset="city" blur={0.8} environmentIntensity={0.3} />
-      <ambientLight intensity={1} />
+      <Environment preset="warehouse" blur={0.6} environmentIntensity={0.6} />
+      <ambientLight intensity={0.4} />
 
       <directionalLight
-        position={[-5, 5, -5]}
-        intensity={1}
+        position={[-5, 8, 5]}
+        intensity={2.5}
         castShadow
         shadow-mapSize={[2048, 2048]}
         shadow-bias={-0.0001}
+        shadow-normalBias={0.04}
+      />
+      <spotLight 
+        position={[5, 0, -5]} 
+        intensity={1.5} 
+        angle={0.5} 
+        penumbra={1} 
+        color="#ffffff" 
       />
 
       <pointLight position={[0, 5, 0]} intensity={0.5} color="#00d4ff" />
@@ -376,13 +384,15 @@ export function Scene({
         <div className="absolute inset-0 grid-bg opacity-20 pointer-events-none" />
 
         <Canvas
-          camera={{ position: [1, 0.5, 1], fov: 50 }}
+          camera={{ position: [1, 0.5, 1], fov: 45 }}
           gl={{
             antialias: true,
             alpha: true,
             toneMapping: THREE.ACESFilmicToneMapping,
-            toneMappingExposure: 1.5,
+            toneMappingExposure: 1.0,
+            preserveDrawingBuffer: true,
           }}
+          shadows
           style={{ background: '#070b14' }}
         >
           <CanvasContent

@@ -7,7 +7,13 @@ const nextConfig = {
     unoptimized: true,
   },
   async rewrites() {
-    const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+    const backendUrl =
+      process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || '';
+
+    if (!backendUrl) {
+      return [];
+    }
+
     return [
       {
         source: '/glb/:path*',

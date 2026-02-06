@@ -4,7 +4,6 @@ import { useEffect, useRef } from 'react';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { Model, ModelPart } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -62,25 +61,25 @@ export function StudyRightPanel({
   };
 
   return (
-    <aside className="h-full bg-card/80 backdrop-blur-sm border-l border-border flex flex-col">
-      <div className="p-3 border-b border-border flex-shrink-0">
-        <h2 className="text-sm font-medium text-foreground">부품 목록</h2>
+    <aside className="h-full bg-[#0b1022]/90 border-l border-border flex flex-col w-full">
+      {/* Parts List Header */}
+      <div className="px-5 pt-5 pb-3 shrink-0">
+        <h2 className="text-sm font-semibold text-foreground">부품 목록</h2>
       </div>
 
-      <div className="py-4 border-b border-border flex-shrink-0">
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground"
+      {/* Horizontal Part Thumbnails */}
+      <div className="px-2 pb-4 border-b border-border shrink-0">
+        <div className="flex items-center gap-1">
+          <button
             onClick={scrollLeft}
+            className="shrink-0 w-6 h-6 flex items-center justify-center text-muted-foreground/50 hover:text-muted-foreground transition-colors"
           >
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
+            <ChevronLeft className="h-4 w-4" />
+          </button>
 
           <div
             ref={scrollContainerRef}
-            className="flex-1 flex gap-4 overflow-x-auto scrollbar-hide py-2"
+            className="flex-1 flex gap-3 overflow-x-auto py-2 px-1"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {model.parts.map((part) => {
@@ -92,14 +91,14 @@ export function StudyRightPanel({
                     if (el) partRefs.current.set(part.id, el);
                   }}
                   onClick={() => onPartSelect(part.id)}
-                  className="flex-shrink-0 flex flex-col items-center gap-2 group"
+                  className="shrink-0 flex flex-col items-center gap-1.5 group"
                 >
                   <div
                     className={cn(
-                      'w-20 h-20 rounded-xl overflow-hidden transition-all duration-200',
+                      'w-16 h-16 rounded-lg overflow-hidden transition-all duration-200',
                       isSelected
-                        ? 'ring-[3px] ring-primary bg-primary/10 shadow-[0_0_20px_rgba(0,212,255,0.4)]'
-                        : 'bg-secondary/30 hover:bg-secondary/50'
+                        ? 'ring-2 ring-primary bg-primary/10 shadow-[0_0_12px_rgba(0,212,255,0.3)]'
+                        : 'bg-[#111827]/80 hover:bg-[#1e293b]/60'
                     )}
                   >
                     <PartThumbnail
@@ -110,10 +109,10 @@ export function StudyRightPanel({
                   </div>
                   <span
                     className={cn(
-                      'text-xs font-medium text-center max-w-20 truncate transition-colors',
+                      'text-[10px] font-medium text-center max-w-16 truncate transition-colors',
                       isSelected
                         ? 'text-primary'
-                        : 'text-muted-foreground group-hover:text-foreground'
+                        : 'text-muted-foreground/70 group-hover:text-muted-foreground'
                     )}
                   >
                     {part.nameKo}
@@ -123,34 +122,33 @@ export function StudyRightPanel({
             })}
           </div>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground"
+          <button
             onClick={scrollRight}
+            className="shrink-0 w-6 h-6 flex items-center justify-center text-muted-foreground/50 hover:text-muted-foreground transition-colors"
           >
-            <ChevronRight className="h-5 w-5" />
-          </Button>
+            <ChevronRight className="h-4 w-4" />
+          </button>
         </div>
       </div>
 
+      {/* Part Description */}
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-        <div className="p-3 border-b border-border flex-shrink-0">
-          <h3 className="text-sm font-medium text-foreground">부품 설명</h3>
+        <div className="px-5 py-3 shrink-0">
+          <h3 className="text-sm font-semibold text-foreground">부품 설명</h3>
         </div>
 
-        <ScrollArea className="flex-1">
-          <div className="p-3">
-            {selectedPart ? (
-              <PartDescription part={selectedPart} />
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                <p className="text-sm">부품을 선택하세요</p>
-                <p className="text-xs mt-1">위 목록에서 부품을 클릭하면</p>
-                <p className="text-xs">상세 설명이 표시됩니다</p>
-              </div>
-            )}
-          </div>
+        <ScrollArea className="flex-1 px-5">
+          {selectedPart ? (
+            <PartDescription part={selectedPart} />
+          ) : (
+            <div className="text-center py-12 text-muted-foreground/50">
+              <p className="text-sm">부품을 선택하세요</p>
+              <p className="text-xs mt-1">
+                위 목록에서 부품을 클릭하면
+              </p>
+              <p className="text-xs">상세 설명이 표시됩니다</p>
+            </div>
+          )}
         </ScrollArea>
       </div>
     </aside>
@@ -159,37 +157,79 @@ export function StudyRightPanel({
 
 function PartDescription({ part }: { part: ModelPart }) {
   return (
-    <div className="space-y-4">
-      <div>
-        <h4 className="text-base font-semibold text-primary">{part.nameKo}</h4>
-        <p className="text-xs text-muted-foreground">{part.name}</p>
-      </div>
+    <div className="space-y-5 pb-6">
+      {/* 부품 명 및 기능 */}
+      <section>
+        <h4 className="text-sm font-semibold text-foreground mb-2.5">
+          부품 명 및 기능
+        </h4>
+        <div className="space-y-2">
+          <div className="text-xs text-muted-foreground leading-relaxed">
+            <p>
+              <span className="text-foreground/80">1.</span>{' '}
+              <span className="text-foreground/90 font-medium">
+                부품 명 : {part.nameKo} ({part.name})
+              </span>
+            </p>
+          </div>
+          <div className="text-xs text-muted-foreground leading-relaxed">
+            <p>
+              <span className="text-foreground/80">2.</span>{' '}
+              {part.role}
+            </p>
+          </div>
+        </div>
+      </section>
 
-      <div>
-        <h5 className="text-xs font-medium text-foreground mb-1">역할</h5>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          {part.role}
-        </p>
-      </div>
+      {/* 재질 정보 */}
+      <section>
+        <h4 className="text-sm font-semibold text-foreground mb-2.5">
+          재질 정보
+        </h4>
+        <div className="space-y-2">
+          <div className="text-xs text-muted-foreground leading-relaxed">
+            <p>
+              <span className="text-foreground/80">1.</span>{' '}
+              {part.material}
+            </p>
+          </div>
+          {part.materialType && (
+            <div className="text-xs text-muted-foreground leading-relaxed">
+              <p>
+                <span className="text-foreground/80">2.</span>{' '}
+                재질 유형: {part.materialType.replace(/_/g, ' ')}
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
 
-      <div>
-        <h5 className="text-xs font-medium text-foreground mb-1">재질</h5>
-        <p className="text-sm text-muted-foreground">{part.material}</p>
-      </div>
-
-      <div className="pt-2 border-t border-border">
-        <h5 className="text-xs font-medium text-foreground mb-2">관련 정보</h5>
-        <ul className="space-y-1.5">
-          <li className="text-xs text-muted-foreground flex items-start gap-2">
-            <span className="text-primary">•</span>
-            <span>3D 모델에서 직접 클릭하여 부품을 확인할 수 있습니다</span>
-          </li>
-          <li className="text-xs text-muted-foreground flex items-start gap-2">
-            <span className="text-primary">•</span>
-            <span>분해도 슬라이더로 내부 구조를 살펴보세요</span>
-          </li>
-        </ul>
-      </div>
+      {/* 기계적 특성 */}
+      <section>
+        <h4 className="text-sm font-semibold text-foreground mb-2.5">
+          기계적 특성
+        </h4>
+        <div className="space-y-2">
+          <div className="text-xs text-muted-foreground leading-relaxed">
+            <p>
+              <span className="text-foreground/80">1.</span>{' '}
+              하중 : 폭발 행정 시 발생하는 강력한 비틀림 응력(Torsional Stress)과 굽힘 하중을 견뎌야 합니다.
+            </p>
+          </div>
+          <div className="text-xs text-muted-foreground leading-relaxed">
+            <p>
+              <span className="text-foreground/80">2.</span>{' '}
+              마찰 : 메인 저널과 핀 저널 부위에서 고속 회전 마찰이 발생하므로, 정밀한 연마(Polishing)와 오일막 유지를 위한 높은 내마모성이 요구됩니다.
+            </p>
+          </div>
+          <div className="text-xs text-muted-foreground leading-relaxed">
+            <p>
+              <span className="text-foreground/80">3.</span>{' '}
+              피로 특성 : 수억 번 이상의 반복적인 하중 변화에도 파손되지 않는 높은 피로 한도를 가져야 합니다.
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

@@ -16,10 +16,9 @@ import { Bloom, EffectComposer } from '@react-three/postprocessing';
 
 import * as THREE from 'three';
 
-import { RotateCcw, RotateCw } from 'lucide-react';
+import { Maximize2, RotateCcw, RotateCw } from 'lucide-react';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 
-import { Button } from '@/components/ui/button';
 import type { CameraState, Model } from '@/lib/types';
 import { useViewerStore } from '@/store/viewer-store';
 
@@ -222,9 +221,9 @@ const ManualControls = forwardRef<ControlsHandle, ManualControlsProps>(
         minDistance={MIN_DISTANCE}
         maxDistance={MAX_DISTANCE}
         mouseButtons={{
-          LEFT: THREE.MOUSE.ROTATE, // 좌클릭: 회전
-          MIDDLE: THREE.MOUSE.DOLLY, // 휠클릭: 줌
-          RIGHT: THREE.MOUSE.PAN, // 우클릭: 이동 (시점 변경)
+          LEFT: THREE.MOUSE.ROTATE,
+          MIDDLE: THREE.MOUSE.DOLLY,
+          RIGHT: THREE.MOUSE.PAN,
         }}
         onChange={debouncedSave}
       />
@@ -290,10 +289,10 @@ function CanvasContent({
 
       <EffectComposer enableNormalPass>
         <Bloom
-          luminanceThreshold={0.5} // 이 값보다 밝은 빛만 번지게 함 (중요)
-          mipmapBlur // 부드러운 번짐
-          intensity={0.2} // 번짐 강도
-          radius={0.5} // 번짐 반경
+          luminanceThreshold={0.5}
+          mipmapBlur
+          intensity={0.2}
+          radius={0.5}
         />
       </EffectComposer>
 
@@ -341,7 +340,6 @@ export function Scene({
   const [contextLost, setContextLost] = useState(false);
   const retryCountRef = useRef(0);
 
-  // WebGL 컨텍스트 손실 시 Canvas 재생성
   const handleCreated = useCallback(({ gl }: { gl: THREE.WebGLRenderer }) => {
     const canvas = gl.domElement;
 
@@ -350,7 +348,6 @@ export function Scene({
       console.warn('WebGL context lost');
       setContextLost(true);
 
-      // 자동 복구 시도 (최대 3회)
       if (retryCountRef.current < 3) {
         retryCountRef.current += 1;
         setTimeout(() => {
@@ -369,7 +366,6 @@ export function Scene({
     canvas.addEventListener('webglcontextlost', handleContextLost);
     canvas.addEventListener('webglcontextrestored', handleContextRestored);
 
-    // 컨텍스트 정상 생성 시 초기화
     setContextLost(false);
     retryCountRef.current = 0;
 
@@ -379,13 +375,11 @@ export function Scene({
     };
   }, []);
 
-  // zustand store에서 카메라 상태 가져오기
   const store = useViewerStore(model.id);
   const cameraState = store((state) => state.cameraState);
   const setCameraState = store((state) => state.setCameraState);
   const isHydrated = store((state) => state.isHydrated);
 
-  // hydration 완료 후에만 초기 카메라 상태 전달
   const initialCameraState = isHydrated ? cameraState : null;
 
   const handleCameraChange = useCallback(
@@ -424,19 +418,10 @@ export function Scene({
     controlsRef.current?.stopRotate();
   };
 
-  const handleZoomIn = () => {
-    controlsRef.current?.zoomIn();
-    setZoomValue((prev) => Math.min(100, prev + 10));
-  };
-
-  const handleZoomOut = () => {
-    controlsRef.current?.zoomOut();
-    setZoomValue((prev) => Math.max(0, prev - 10));
-  };
-
   return (
-    <div className="w-full h-full relative flex flex-col">
-      <div className="flex-1 relative">
+    <div className="w-full h-full relative">
+      {/* 3D Canvas */}
+      <div className="absolute inset-0">
         <div className="absolute inset-0 grid-bg opacity-20 pointer-events-none" />
 
         {contextLost ? (
@@ -478,117 +463,104 @@ export function Scene({
         )}
       </div>
 
-      <div className="flex-shrink-0 bg-card/90 backdrop-blur-sm border-t border-border p-3">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3 flex-1">
-            <span className="text-xs font-medium text-foreground whitespace-nowrap">
-              분해도
-            </span>
-            <div className="flex-1 relative max-w-[200px]">
-              <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-cyan-500 to-primary rounded-full transition-all duration-150"
-                  style={{ width: `${explodeValue}%` }}
-                />
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={explodeValue}
-                onChange={(e) => onExplodeChange(Number(e.target.value))}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              />
+      {/* Top-right control buttons */}
+      <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+        <button
+          className={`w-10 h-10 rounded-lg bg-[#0d1321]/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors ${
+            isRotatingLeft ? 'text-primary border-primary/50 bg-primary/10' : ''
+          }`}
+          onMouseDown={handleRotateLeftStart}
+          onMouseUp={handleRotateLeftEnd}
+          onMouseLeave={handleRotateLeftEnd}
+          onTouchStart={handleRotateLeftStart}
+          onTouchEnd={handleRotateLeftEnd}
+          title="왼쪽으로 회전"
+        >
+          <RotateCcw className="w-4 h-4" />
+        </button>
+        <button
+          className={`w-10 h-10 rounded-lg bg-[#0d1321]/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors ${
+            isRotatingRight
+              ? 'text-primary border-primary/50 bg-primary/10'
+              : ''
+          }`}
+          onMouseDown={handleRotateRightStart}
+          onMouseUp={handleRotateRightEnd}
+          onMouseLeave={handleRotateRightEnd}
+          onTouchStart={handleRotateRightStart}
+          onTouchEnd={handleRotateRightEnd}
+          title="오른쪽으로 회전"
+        >
+          <RotateCw className="w-4 h-4" />
+        </button>
+        <button
+          className="w-10 h-10 rounded-lg bg-[#0d1321]/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors"
+          title="전체화면"
+        >
+          <Maximize2 className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Bottom sliders */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex items-end gap-8">
+        {/* Explode Slider */}
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-xs text-muted-foreground font-medium">
+            분해도
+          </span>
+          <div className="w-[200px] relative">
+            <div className="h-1 bg-white/10 rounded-full overflow-hidden">
               <div
-                className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full shadow-[0_0_8px_rgba(0,212,255,0.6)] pointer-events-none transition-all duration-150"
-                style={{ left: `calc(${explodeValue}% - 6px)` }}
+                className="h-full bg-linear-to-r from-primary/60 to-primary rounded-full transition-all duration-150"
+                style={{ width: `${explodeValue}%` }}
               />
             </div>
-            <div className="flex text-[10px] text-muted-foreground gap-2">
-              <span>조립</span>
-              <span className="text-primary font-mono">{explodeValue}%</span>
-              <span>분해</span>
-            </div>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={explodeValue}
+              onChange={(e) => onExplodeChange(Number(e.target.value))}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+            <div
+              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full shadow-[0_0_8px_rgba(0,212,255,0.5)] pointer-events-none transition-all duration-150"
+              style={{ left: `calc(${explodeValue}% - 6px)` }}
+            />
           </div>
+          <span className="text-[10px] text-primary font-mono">
+            {explodeValue}%
+          </span>
+        </div>
 
-          <div className="w-px h-8 bg-border" />
-
-          <div className="flex items-center gap-3 flex-1">
-            <span className="text-xs font-medium text-foreground whitespace-nowrap">
-              zoom
-            </span>
-            <div className="flex-1 relative max-w-[200px]">
-              <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-cyan-500 to-primary rounded-full transition-all duration-150"
-                  style={{ width: `${zoomValue}%` }}
-                />
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={zoomValue}
-                onChange={(e) => handleZoomSliderChange(Number(e.target.value))}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              />
+        {/* Zoom Slider */}
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
+            Zoom
+          </span>
+          <div className="w-[200px] relative">
+            <div className="h-1 bg-white/10 rounded-full overflow-hidden">
               <div
-                className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full shadow-[0_0_8px_rgba(0,212,255,0.6)] pointer-events-none transition-all duration-150"
-                style={{ left: `calc(${zoomValue}% - 6px)` }}
+                className="h-full bg-linear-to-r from-primary/60 to-primary rounded-full transition-all duration-150"
+                style={{ width: `${zoomValue}%` }}
               />
             </div>
-            <div className="flex text-[10px] text-muted-foreground gap-2">
-              <span>zoom out</span>
-              <span className="text-primary font-mono">{zoomValue}%</span>
-              <span>zoom in</span>
-            </div>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={zoomValue}
+              onChange={(e) => handleZoomSliderChange(Number(e.target.value))}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+            <div
+              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full shadow-[0_0_8px_rgba(0,212,255,0.5)] pointer-events-none transition-all duration-150"
+              style={{ left: `calc(${zoomValue}% - 6px)` }}
+            />
           </div>
-
-          <div className="w-px h-8 bg-border" />
-
-          <div className="flex gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              className={`h-8 w-8 hover:bg-primary/20 hover:text-primary transition-colors ${
-                isRotatingLeft ? 'bg-primary/30 text-primary' : ''
-              }`}
-              onMouseDown={handleRotateLeftStart}
-              onMouseUp={handleRotateLeftEnd}
-              onMouseLeave={handleRotateLeftEnd}
-              onTouchStart={handleRotateLeftStart}
-              onTouchEnd={handleRotateLeftEnd}
-              title="왼쪽으로 회전"
-            >
-              <RotateCcw className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className={`h-8 w-8 hover:bg-primary/20 hover:text-primary transition-colors ${
-                isRotatingRight ? 'bg-primary/30 text-primary' : ''
-              }`}
-              onMouseDown={handleRotateRightStart}
-              onMouseUp={handleRotateRightEnd}
-              onMouseLeave={handleRotateRightEnd}
-              onTouchStart={handleRotateRightStart}
-              onTouchEnd={handleRotateRightEnd}
-              title="오른쪽으로 회전"
-            >
-              <RotateCw className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <div className="w-px h-8 bg-border" />
-
-          <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-            <span>🖱️</span>
-            <span>좌클릭: 회전</span>
-            <span className="text-border">|</span>
-            <span>우클릭: 이동</span>
-            <span className="text-border">|</span>
-            <span>휠: 줌</span>
-          </div>
+          <span className="text-[10px] text-muted-foreground uppercase">
+            IN
+          </span>
         </div>
       </div>
     </div>

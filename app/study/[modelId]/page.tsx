@@ -1,16 +1,16 @@
 'use client';
 
-import { use, useCallback, useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 
 import dynamic from 'next/dynamic';
 import { notFound } from 'next/navigation';
 
 import { Loader2 } from 'lucide-react';
 
-import { Header } from '@/components/header';
+import { StudyHeader } from '@/components/study-header';
 import { StudyLeftPanel } from '@/components/viewer/study-left-panel';
 import { StudyRightPanel } from '@/components/viewer/study-right-panel';
-import { fetchViewerData, sendChatMessage } from '@/lib/api';
+import { fetchViewerData } from '@/lib/api';
 import { toViewerModel } from '@/lib/transform';
 import type { Model } from '@/lib/types';
 import { useViewerStore } from '@/store/viewer-store';
@@ -135,24 +135,18 @@ export default function StudyPage({ params }: PageProps) {
   const selectedPartId = store((state) => state.selectedPartId);
   const explodeValue = store((state) => state.explodeValue);
   const notes = store((state) => state.notes);
-  const aiHistory = store((state) => state.aiHistory);
   const isHydrated = store((state) => state.isHydrated);
   const setSelectedPartId = store((state) => state.setSelectedPartId);
   const setExplodeValue = store((state) => state.setExplodeValue);
   const setNotes = store((state) => state.setNotes);
-  const addChatMessage = store((state) => state.addChatMessage);
-  const clearChatHistory = store((state) => state.clearChatHistory);
 
   const [hoveredPartId, setHoveredPartId] = useState<string | null>(null);
-  const [isAiLoading, setIsAiLoading] = useState(false);
   const [isSceneReady, setIsSceneReady] = useState(false);
 
-  // Hydration 보장: 클라이언트에서 마운트 후 hydration 완료 확인
+  // Hydration 보장
   useEffect(() => {
-    // 이미 hydrated 상태이면 스킵
     if (isHydrated) return;
 
-    // zustand persist가 hydration을 완료할 때까지 약간 대기 후 강제 설정
     const timeout = setTimeout(() => {
       const currentState = store.getState();
       if (!currentState.isHydrated) {
@@ -163,9 +157,8 @@ export default function StudyPage({ params }: PageProps) {
     return () => clearTimeout(timeout);
   }, [store, isHydrated]);
 
-  // Scene 마운트 지연: WebGL 컨텍스트 충돌 방지
+  // Scene 마운트 지연
   useEffect(() => {
-    // 모델과 hydration이 준비되면 Scene 마운트 준비
     if (model && isHydrated && !isSceneReady) {
       const timeout = setTimeout(() => {
         setIsSceneReady(true);
@@ -173,40 +166,6 @@ export default function StudyPage({ params }: PageProps) {
       return () => clearTimeout(timeout);
     }
   }, [model, isHydrated, isSceneReady]);
-
-  const handleSendMessage = useCallback(
-    async (message: string) => {
-      if (!model) return;
-
-      addChatMessage({ role: 'user', content: message });
-      setIsAiLoading(true);
-
-      try {
-        // Extract history: 이전 사용자 질문들만 추출
-        const history = aiHistory
-          .filter((m) => m.role === 'user')
-          .map((m) => m.content);
-
-        // Call the API with new format
-        const response = await sendChatMessage(modelId, message, history);
-
-        // Add assistant message
-        if (response) {
-          addChatMessage({ role: 'assistant', content: response });
-        }
-      } catch (error) {
-        console.error('Chat error:', error);
-        addChatMessage({
-          role: 'assistant',
-          content:
-            '죄송합니다. 응답을 생성하는 중 오류가 발생했습니다. 다시 시도해주세요.',
-        });
-      } finally {
-        setIsAiLoading(false);
-      }
-    },
-    [model, modelId, aiHistory, addChatMessage]
-  );
 
   // Show loading state
   if (isLoading) {
@@ -236,21 +195,17 @@ export default function StudyPage({ params }: PageProps) {
 
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden">
-      <Header />
+      <StudyHeader />
 
       <div className="flex-1 flex overflow-hidden">
-        <div className="w-[20%] min-w-[200px] max-w-[320px]">
-          <StudyLeftPanel
-            model={model}
-            notes={notes}
-            onNotesChange={setNotes}
-            aiHistory={aiHistory}
-            onSendMessage={handleSendMessage}
-            onClearHistory={clearChatHistory}
-            isAiLoading={isAiLoading}
-          />
-        </div>
+        {/* Left Panel: Icon sidebar + content */}
+        <StudyLeftPanel
+          model={model}
+          notes={notes}
+          onNotesChange={setNotes}
+        />
 
+        {/* Center: 3D Viewer */}
         <main className="flex-1 relative min-w-[400px]">
           {isSceneReady ? (
             <Scene
@@ -277,7 +232,8 @@ export default function StudyPage({ params }: PageProps) {
           )}
         </main>
 
-        <div className="w-[20%] min-w-[200px] max-w-[320px]">
+        {/* Right Panel: Parts + Description */}
+        <div className="w-[280px] min-w-[240px]">
           <StudyRightPanel
             model={model}
             selectedPartId={selectedPartId}
@@ -291,7 +247,7 @@ export default function StudyPage({ params }: PageProps) {
 
 function PartTooltip({ part }: { part: { nameKo: string; role: string } }) {
   return (
-    <div className="absolute top-4 left-1/2 -translate-x-1/2 glass-panel px-4 py-2 pointer-events-none">
+    <div className="absolute top-4 left-1/2 -translate-x-1/2 glass-panel px-4 py-2 pointer-events-none z-10">
       <p className="text-sm font-medium text-primary">{part.nameKo}</p>
       <p className="text-xs text-muted-foreground max-w-xs truncate">
         {part.role}

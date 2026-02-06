@@ -275,7 +275,7 @@ function CanvasContent({
         color="#ffffff"
       />
 
-      <pointLight position={[0, 5, 0]} intensity={0.2} color="#00d4ff" />
+      <pointLight position={[0, 5, 0]} intensity={0.2} color="#3B82F6" />
 
       <Suspense fallback={<LoadingFallback />}>
         <ModelViewer
@@ -289,10 +289,10 @@ function CanvasContent({
 
       <EffectComposer enableNormalPass>
         <Bloom
-          luminanceThreshold={0.5}
-          mipmapBlur
-          intensity={0.2}
-          radius={0.5}
+          luminanceThreshold={0.5} // 이 값보다 밝은 빛만 번지게 함 (중요)
+          mipmapBlur // 부드러운 번짐
+          intensity={0.5} // 번짐 강도
+          radius={0.5} // 번짐 반경
         />
       </EffectComposer>
 

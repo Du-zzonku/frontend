@@ -118,6 +118,7 @@ export default function StudyPage({ params }: PageProps) {
         const systemPrompt =
           systemPrompts[modelId] ||
           '당신은 SIMVEX의 공학 교육 어시스턴트입니다. 한국어로 친절하게 답변해주세요.';
+        console.log('data : ', data);
         const viewerModel = toViewerModel(data, systemPrompt);
         setModel(viewerModel);
       } catch (error) {

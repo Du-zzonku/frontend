@@ -3,16 +3,12 @@ import { NextResponse } from 'next/server';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 
 interface ModelSliceDto {
-  content: {
+  models: {
     modelId: string;
     title: string;
     thumbnailUrl: string;
     overview: string;
   }[];
-  pageable: {
-    pageNumber: number;
-    pageSize: number;
-  };
   hasNext: boolean;
   pageNumber: number;
 }
@@ -29,7 +25,7 @@ export async function GET() {
     }
 
     const data: ModelSliceDto = await response.json();
-    return NextResponse.json(data.content);
+    return NextResponse.json(data.models);
   } catch {
     return NextResponse.json(
       { error: 'Failed to connect to backend' },

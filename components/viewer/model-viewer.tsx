@@ -117,6 +117,7 @@ export function ModelViewer({
     <group ref={groupRef}>
       {instancedParts.map((inst) => {
         const part = model.parts.find((p) => p.id === inst.partId)!;
+        const isSelected = (selectedPartId === inst.partId);
 
         return (
           <PartMesh
@@ -128,8 +129,8 @@ export function ModelViewer({
             scale={inst.scale}
             color={partColors[inst.partId]}
             materialType={part.materialType}
-            isSelected={selectedPartId === inst.partId}
-            onClick={() => onPartClick(selectedPartId === inst.partId ? null : inst.partId)}
+            isSelected={isSelected}
+            onClick={() => onPartClick(isSelected ? null : inst.partId)}
             onPointerOver={() => onPartHover(inst.partId)}
             onPointerOut={() => onPartHover(null)}
           />

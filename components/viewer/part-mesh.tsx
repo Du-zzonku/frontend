@@ -1,13 +1,10 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-
 import { useGLTF } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import type { ThreeEvent } from '@react-three/fiber';
-
 import * as THREE from 'three';
-
 import type { ModelPart, Quaternion, Vector3 } from '@/lib/types';
 import { MATERIAL_PRESET, type MaterialType } from '@/types/model';
 
@@ -42,79 +39,94 @@ export function PartMesh({
   const [isHovered, setIsHovered] = useState(false);
   const { scene } = useGLTF(part.glbPath);
 
-  // Clone the scene to avoid sharing issues
-  const clonedScene = useMemo(() => {
-    const cloned = scene.clone();
-    return cloned;
-  }, [scene]);
+  // 1. 원본 재질을 백업할 Ref 생성
+  const originalMaterials = useRef<Map<string, THREE.Material>>(new Map());
 
-  // Get material preset or use defaults
+  // 2. Scene 복제 (메모리 최적화)
+  const clonedScene = useMemo(() => scene.clone(), [scene]);
+
+  // Material 설정값 가져오기
   const materialConfig = useMemo(() => {
     if (materialType && MATERIAL_PRESET[materialType]) {
       return MATERIAL_PRESET[materialType];
     }
-    // Default fallback
     return { color, metalness: 0.6, roughness: 0.3, vertexColors: false };
   }, [materialType, color]);
 
-  // Apply material color and effects
   useEffect(() => {
     if (clonedScene) {
       clonedScene.traverse((child) => {
         if (child instanceof THREE.Mesh) {
-          const material = child.material as THREE.MeshStandardMaterial;
-          if (material) {
-            child.material = material.clone();
-            const newMaterial = child.material as THREE.MeshStandardMaterial;
+          const mesh = child;
 
-            const baseColor = materialType ? materialConfig.color : color;
-            newMaterial.color = new THREE.Color(baseColor);
-            newMaterial.metalness = materialConfig.metalness;
-            newMaterial.roughness = materialConfig.roughness;
-
-            if (materialConfig.vertexColors !== undefined) {
-              newMaterial.vertexColors = materialConfig.vertexColors;
-            }
-
-            // 선택/호버 상태에 따른 발광 효과
-            if (isSelected) {
-              // 전체적으로 밝게 빛나는 효과
-              newMaterial.color.set('#55ddff');
-              newMaterial.emissive.set('#00ccff');
-              newMaterial.emissiveIntensity = 3.0;
-              newMaterial.metalness = 0.0;
-              newMaterial.roughness = 1.0;
-              newMaterial.toneMapped = false;
-            } else if (isHovered) {
-              // 호버 시 밝게 강조 (전체 밝기가 낮아졌으므로 더 돋보임)
-              newMaterial.emissive.set('#00d4ff');
-              newMaterial.emissiveIntensity = 1.2;
-            } else {
-              newMaterial.emissive.set('#000000');
-              newMaterial.emissiveIntensity = 0;
-            }
+          if (!originalMaterials.current.has(mesh.uuid)) {
+            const mat = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
+            originalMaterials.current.set(mesh.uuid, mat.clone());
           }
 
-          const existingEdges = child.children.find(
+          if (isSelected) {
+     
+            const original = originalMaterials.current.get(mesh.uuid) as THREE.MeshStandardMaterial;
+            const newMaterial = original.clone();
+
+            newMaterial.map = null;
+
+            newMaterial.color.set("#80eaff");
+            newMaterial.emissive.set('#80eaff');
+            newMaterial.emissiveIntensity = 1.5; // Bloom 강도
+            newMaterial.metalness = 1.0;
+            newMaterial.roughness = 0.25;
+            newMaterial.envMapIntensity = 1.0;
+            newMaterial.toneMapped = true; // 색상 보정 끄기
+
+            mesh.material = newMaterial;
+
+          } else {
+  
+            const original = originalMaterials.current.get(mesh.uuid) as THREE.MeshStandardMaterial;
+            const restoreMaterial = original.clone();
+            const baseColor = materialType ? materialConfig.color : color;
+            restoreMaterial.color = new THREE.Color(baseColor);
+            restoreMaterial.metalness = materialConfig.metalness;
+            restoreMaterial.roughness = materialConfig.roughness;
+
+            if (materialConfig.vertexColors !== undefined) {
+              restoreMaterial.vertexColors = materialConfig.vertexColors;
+            }
+
+            if (isHovered) {
+              // 호버 효과
+              restoreMaterial.emissive.set('#80eaff');
+              restoreMaterial.emissiveIntensity = 1.0;
+              restoreMaterial.toneMapped = true;
+            } else {
+              // 평상시
+              restoreMaterial.emissive.set('#000000');
+              restoreMaterial.emissiveIntensity = 0;
+              restoreMaterial.toneMapped = true;
+            }
+
+            mesh.material = restoreMaterial;
+          }
+
+          const existingEdges = mesh.children.find(
             (c) => c.userData.isEdgeLine
           );
-          if (!existingEdges && child.geometry) {
-            const edgesGeometry = new THREE.EdgesGeometry(child.geometry, 30);
+          if (!existingEdges && mesh.geometry) {
+            const edgesGeometry = new THREE.EdgesGeometry(mesh.geometry, 30);
             const edgesMaterial = new THREE.LineBasicMaterial({
               color: 0x000000,
               linewidth: 1,
             });
             const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
             edges.userData.isEdgeLine = true;
-            child.add(edges);
+            mesh.add(edges);
           }
         }
       });
     }
   }, [clonedScene, color, materialType, materialConfig, isSelected, isHovered]);
 
-  // Target quaternion for smooth interpolation
-  // JSON uses xyzw format (same as Three.js)
   const targetQuat = useMemo(() => {
     if (quaternion) {
       return new THREE.Quaternion(
@@ -127,10 +139,8 @@ export function PartMesh({
     return null;
   }, [quaternion]);
 
-  // Animate position, rotation, and scale smoothly
   useFrame((_, delta) => {
     if (groupRef.current) {
-      // Position lerp
       groupRef.current.position.x +=
         (position[0] - groupRef.current.position.x) * delta * 5;
       groupRef.current.position.y +=
@@ -138,7 +148,6 @@ export function PartMesh({
       groupRef.current.position.z +=
         (position[2] - groupRef.current.position.z) * delta * 5;
 
-      // Quaternion slerp (if provided)
       if (targetQuat) {
         groupRef.current.quaternion.slerp(targetQuat, delta * 5);
       } else if (rotation) {
@@ -150,7 +159,6 @@ export function PartMesh({
           (rotation[2] - groupRef.current.rotation.z) * delta * 5;
       }
 
-      // Scale lerp (if provided)
       if (scale) {
         groupRef.current.scale.x +=
           (scale[0] - groupRef.current.scale.x) * delta * 5;

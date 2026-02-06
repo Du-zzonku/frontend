@@ -10,6 +10,7 @@ import {
   useState,
 } from 'react';
 
+import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import { ContactShadows, Environment, OrbitControls } from '@react-three/drei';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 
@@ -286,6 +287,15 @@ function CanvasContent({
           onPartHover={onPartHover}
         />
       </Suspense>
+
+      <EffectComposer enableNormalPass>
+        <Bloom 
+          luminanceThreshold={0.5} // 이 값보다 밝은 빛만 번지게 함 (중요)
+          mipmapBlur               // 부드러운 번짐
+          intensity={0.2}          // 번짐 강도
+          radius={0.5}             // 번짐 반경
+        />
+      </EffectComposer>
 
       <ContactShadows
         position={[0, -0.01, 0]}

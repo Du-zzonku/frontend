@@ -1,11 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useState } from 'react';
 
-import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport } from 'ai';
-import type { UIMessage } from 'ai';
-import { Loader2, Send } from 'lucide-react';
+import { Send } from 'lucide-react';
 
 import type { ModelPart } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -15,57 +12,19 @@ interface AIChatPanelProps {
   selectedPart: ModelPart | null;
 }
 
-/** UIMessage에서 텍스트 콘텐츠 추출 */
-function getMessageText(message: UIMessage): string {
-  return message.parts
-    .filter((p): p is { type: 'text'; text: string } => p.type === 'text')
-    .map((p) => p.text)
-    .join('');
+interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  text: string;
 }
 
-export function AIChatPanel({ systemPrompt, selectedPart }: AIChatPanelProps) {
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+export function AIChatPanel({ selectedPart }: AIChatPanelProps) {
   const [input, setInput] = useState('');
+  const [messages] = useState<ChatMessage[]>([]);
 
-  const transport = useMemo(
-    () =>
-      new DefaultChatTransport({
-        api: '/api/chat',
-        body: {
-          systemPrompt,
-          context: selectedPart
-            ? {
-                partName: selectedPart.nameKo,
-                partRole: selectedPart.role,
-                partMaterial: selectedPart.material,
-              }
-            : undefined,
-        },
-      }),
-    [systemPrompt, selectedPart]
-  );
-
-  const { messages, sendMessage, status, error } = useChat({ transport });
-
-  const isLoading = status === 'submitted' || status === 'streaming';
-
-  // 새 메시지 시 자동 스크롤
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  const handleSubmit = async (e?: React.FormEvent) => {
+  const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!input.trim() || isLoading) return;
-    const text = input.trim();
-    setInput('');
-    await sendMessage({ text });
-  };
-
-  const handleSuggestionClick = async (suggestion: string) => {
-    if (isLoading) return;
-    setInput('');
-    await sendMessage({ text: suggestion });
+    // TODO: 백엔드 AI API 연동 예정
   };
 
   return (
@@ -107,7 +66,6 @@ export function AIChatPanel({ systemPrompt, selectedPart }: AIChatPanelProps) {
               ].map((suggestion) => (
                 <button
                   key={suggestion}
-                  onClick={() => handleSuggestionClick(suggestion)}
                   className="text-left px-3 py-2 rounded-lg border border-[#595959]/50 text-xs text-white/60 hover:text-white hover:border-[#60A5FA]/50 transition-colors"
                 >
                   {suggestion}
@@ -117,54 +75,29 @@ export function AIChatPanel({ systemPrompt, selectedPart }: AIChatPanelProps) {
           </div>
         ) : (
           <div className="flex flex-col gap-3 py-2">
-            {messages.map((message: UIMessage) => {
-              const text = getMessageText(message);
-              if (!text) return null;
-              return (
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={cn(
+                  'flex',
+                  message.role === 'user' ? 'justify-end' : 'justify-start'
+                )}
+              >
                 <div
-                  key={message.id}
                   className={cn(
-                    'flex',
-                    message.role === 'user' ? 'justify-end' : 'justify-start'
+                    'max-w-[85%] px-3.5 py-2.5 rounded-xl text-sm leading-relaxed',
+                    message.role === 'user'
+                      ? 'bg-[#1E40AF] text-white rounded-br-sm'
+                      : 'bg-[#1a1f30] border border-[#595959]/30 text-white/80 rounded-bl-sm'
                   )}
                 >
-                  <div
-                    className={cn(
-                      'max-w-[85%] px-3.5 py-2.5 rounded-xl text-sm leading-relaxed',
-                      message.role === 'user'
-                        ? 'bg-[#1E40AF] text-white rounded-br-sm'
-                        : 'bg-[#1a1f30] border border-[#595959]/30 text-white/80 rounded-bl-sm'
-                    )}
-                  >
-                    <p className="whitespace-pre-wrap overflow-wrap-break-word">
-                      {text}
-                    </p>
-                  </div>
+                  <p className="whitespace-pre-wrap">{message.text}</p>
                 </div>
-              );
-            })}
-            {isLoading &&
-              messages.length > 0 &&
-              messages[messages.length - 1]?.role === 'user' && (
-                <div className="flex justify-start">
-                  <div className="px-3.5 py-2.5 rounded-xl rounded-bl-sm bg-[#1a1f30] border border-[#595959]/30">
-                    <Loader2 className="w-4 h-4 text-[#60A5FA] animate-spin" />
-                  </div>
-                </div>
-              )}
-            <div ref={messagesEndRef} />
+              </div>
+            ))}
           </div>
         )}
       </div>
-
-      {/* 에러 표시 */}
-      {error && (
-        <div className="mx-5 mb-2 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20 shrink-0">
-          <p className="text-xs text-red-400">
-            오류가 발생했습니다. 다시 시도해주세요.
-          </p>
-        </div>
-      )}
 
       {/* 입력 영역 */}
       <div className="p-5 pt-3 shrink-0">
@@ -173,12 +106,11 @@ export function AIChatPanel({ systemPrompt, selectedPart }: AIChatPanelProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="질문을 입력하세요..."
-            disabled={isLoading}
-            className="flex-1 h-[44px] px-4 bg-transparent border border-[#595959]/50 rounded-xl text-sm text-white placeholder:text-[#595959] focus:outline-none focus:border-[#60A5FA]/50 transition-colors disabled:opacity-50"
+            className="flex-1 h-[44px] px-4 bg-transparent border border-[#595959]/50 rounded-xl text-sm text-white placeholder:text-[#595959] focus:outline-none focus:border-[#60A5FA]/50 transition-colors"
           />
           <button
             type="submit"
-            disabled={isLoading || !input.trim()}
+            disabled={!input.trim()}
             className="w-[44px] h-[44px] shrink-0 rounded-xl bg-[#1E40AF] hover:bg-[#1E3A8A] disabled:opacity-30 disabled:hover:bg-[#1E40AF] text-white flex items-center justify-center transition-colors"
           >
             <Send className="w-4 h-4" />

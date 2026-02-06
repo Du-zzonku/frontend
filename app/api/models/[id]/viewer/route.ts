@@ -12,14 +12,38 @@ const MODEL_FOLDER_MAP: Record<string, string> = {
   machine_vice: 'Machine_Vice',
 };
 
+const STRIP_SUFFIX_FILES = ['Link', 'Gripper', 'Pin'];
+
+function normalizeFilename(filename: string): string {
+  let normalized = filename.replace(/ /g, '_');
+
+  for (const baseName of STRIP_SUFFIX_FILES) {
+    const pattern = new RegExp(`^${baseName}_\\d+\\.glb$`, 'i');
+    if (pattern.test(normalized)) {
+      normalized = `${baseName}.glb`;
+      break;
+    }
+  }
+
+  return normalized;
+}
+
 function convertGlbUrl(glbUrl: string, modelId: string): string {
   if (!glbUrl) return glbUrl;
   if (glbUrl.startsWith('http://') || glbUrl.startsWith('https://')) {
     return glbUrl;
   }
+
   const folder = MODEL_FOLDER_MAP[modelId] || modelId;
+
+  if (glbUrl.startsWith('/models/')) {
+    const parts = glbUrl.split('/');
+    const filename = parts[parts.length - 1];
+    return `/models/${folder}/${normalizeFilename(filename)}`;
+  }
+
   const filename = glbUrl.replace(/^\/glb\//, '');
-  return `/models/${folder}/${filename}`;
+  return `/models/${folder}/${normalizeFilename(filename)}`;
 }
 
 export async function GET(

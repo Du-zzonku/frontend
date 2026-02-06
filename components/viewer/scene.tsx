@@ -10,9 +10,9 @@ import {
   useState,
 } from 'react';
 
-import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import { ContactShadows, Environment, OrbitControls } from '@react-three/drei';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Bloom, EffectComposer } from '@react-three/postprocessing';
 
 import * as THREE from 'three';
 
@@ -222,9 +222,9 @@ const ManualControls = forwardRef<ControlsHandle, ManualControlsProps>(
         minDistance={MIN_DISTANCE}
         maxDistance={MAX_DISTANCE}
         mouseButtons={{
-          LEFT: 0,
-          MIDDLE: 2,
-          RIGHT: 0,
+          LEFT: THREE.MOUSE.ROTATE, // 좌클릭: 회전
+          MIDDLE: THREE.MOUSE.DOLLY, // 휠클릭: 줌
+          RIGHT: THREE.MOUSE.PAN, // 우클릭: 이동 (시점 변경)
         }}
         onChange={debouncedSave}
       />
@@ -289,11 +289,11 @@ function CanvasContent({
       </Suspense>
 
       <EffectComposer enableNormalPass>
-        <Bloom 
+        <Bloom
           luminanceThreshold={0.5} // 이 값보다 밝은 빛만 번지게 함 (중요)
-          mipmapBlur               // 부드러운 번짐
-          intensity={0.2}          // 번짐 강도
-          radius={0.5}             // 번짐 반경
+          mipmapBlur // 부드러운 번짐
+          intensity={0.2} // 번짐 강도
+          radius={0.5} // 번짐 반경
         />
       </EffectComposer>
 
@@ -577,6 +577,17 @@ export function Scene({
             >
               <RotateCw className="h-4 w-4" />
             </Button>
+          </div>
+
+          <div className="w-px h-8 bg-border" />
+
+          <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+            <span>🖱️</span>
+            <span>좌클릭: 회전</span>
+            <span className="text-border">|</span>
+            <span>우클릭: 이동</span>
+            <span className="text-border">|</span>
+            <span>휠: 줌</span>
           </div>
         </div>
       </div>

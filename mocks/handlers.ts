@@ -100,33 +100,9 @@ interface ModelSummary {
 }
 
 export const handlers = [
-  // GET /api/models - 모델 목록 조회
-  http.get('/api/models', async () => {
-    await delay(100);
-
-    const models: ModelSummary[] = Object.values(mockDataMap).map((data) => ({
-      modelId: data.model.modelId,
-      title: data.model.title,
-      thumbnailUrl: data.model.thumbnailUrl,
-      overview: data.model.overview,
-    }));
-
-    return HttpResponse.json(models);
-  }),
-
-  // GET /api/models/:id/viewer - model + parts + nodes 데이터
-  http.get('/api/models/:id/viewer', async ({ params }) => {
-    await delay(100);
-
-    const modelId = params.id as string;
-    const data = mockDataMap[modelId];
-
-    if (!data) {
-      return HttpResponse.json({ error: 'Model not found' }, { status: 404 });
-    }
-
-    return HttpResponse.json(data);
-  }),
+  // NOTE: /api/models 와 /api/models/:id/viewer는
+  // 실제 백엔드 API를 사용하므로 MSW에서 제외함
+  // Next.js API routes가 백엔드 프록시 역할을 수행
 
   // POST /api/models/:id/chat - AI 질의
   http.post('/api/models/:id/chat', async ({ params, request }) => {

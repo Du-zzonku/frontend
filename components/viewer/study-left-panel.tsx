@@ -134,7 +134,11 @@ export function StudyLeftPanel({
   onNotesChange,
   selectedPart,
 }: StudyLeftPanelProps) {
-  const [activeTab, setActiveTab] = useState<SidebarTab>('edit');
+  const [activeTab, setActiveTab] = useState<SidebarTab | null>('edit');
+
+  const handleTabClick = (tabId: SidebarTab) => {
+    setActiveTab((prev) => (prev === tabId ? null : tabId));
+  };
 
   return (
     <aside className="h-full flex">
@@ -146,7 +150,7 @@ export function StudyLeftPanel({
             return (
               <button
                 key={item.id}
-                onClick={() => setActiveTab(item.id)}
+                onClick={() => handleTabClick(item.id)}
                 className="w-[64px] h-[64px] flex items-center justify-center transition-colors relative"
               >
                 {isActive && (
@@ -155,9 +159,7 @@ export function StudyLeftPanel({
                 <item.icon
                   className={cn(
                     'relative z-10',
-                    isActive
-                      ? 'text-white'
-                      : 'text-white/80 hover:text-white'
+                    isActive ? 'text-white' : 'text-white/80 hover:text-white'
                   )}
                 />
               </button>
@@ -177,22 +179,33 @@ export function StudyLeftPanel({
 
       {/* Content Panel */}
       <div
-        className="w-[394px] shrink-0 flex flex-col overflow-hidden rounded-r-[20px] border-y border-r border-[#595959]/50"
+        className={cn(
+          'shrink-0 flex flex-col overflow-hidden transition-[width,opacity,border-width] duration-300 ease-in-out',
+          activeTab !== null
+            ? 'w-[394px] opacity-100 rounded-r-[20px] border-y border-r border-[#595959]/50'
+            : 'w-0 opacity-0 border-0'
+        )}
         style={{
           background:
             'linear-gradient(180deg, rgba(7, 11, 20, 0.2) 0%, rgba(4, 10, 46, 0.16) 100%)',
         }}
       >
-        {activeTab === 'edit' && (
-          <EditPanel model={model} notes={notes} onNotesChange={onNotesChange} />
-        )}
-        {activeTab === 'robot' && (
-          <AIChatPanel
-            systemPrompt={model.systemPrompt}
-            selectedPart={selectedPart}
-          />
-        )}
-        {activeTab === 'quiz' && <QuizPanel modelId={modelId} />}
+        <div className="w-[394px] h-full flex flex-col">
+          {activeTab === 'edit' && (
+            <EditPanel
+              model={model}
+              notes={notes}
+              onNotesChange={onNotesChange}
+            />
+          )}
+          {activeTab === 'robot' && (
+            <AIChatPanel
+              systemPrompt={model.systemPrompt}
+              selectedPart={selectedPart}
+            />
+          )}
+          {activeTab === 'quiz' && <QuizPanel modelId={modelId} />}
+        </div>
       </div>
     </aside>
   );

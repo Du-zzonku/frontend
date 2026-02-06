@@ -6,10 +6,13 @@ import { useRouter } from 'next/navigation';
 
 import { ChevronLeft, X } from 'lucide-react';
 
-import type { Model } from '@/lib/types';
+import type { Model, ModelPart } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
-type SidebarTab = 'edit' | 'robot' | 'search';
+import { AIChatPanel } from './panels/ai-chat-panel';
+import { QuizPanel } from './panels/quiz-panel';
+
+type SidebarTab = 'edit' | 'robot' | 'quiz';
 
 /* ─── Custom SVG Icons from Figma ─── */
 
@@ -49,26 +52,19 @@ function RobotIcon({ className }: { className?: string }) {
   );
 }
 
-function SearchIcon({ className }: { className?: string }) {
+function QuizIcon({ className }: { className?: string }) {
   return (
     <svg
       width="24"
       height="24"
-      viewBox="53 197 22 22"
+      viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
       <path
-        d="M63.5 200.5C67.2864 200.5 70.5 203.776 70.5 208C70.5 212.224 67.2864 215.5 63.5 215.5C59.7136 215.5 56.5 212.224 56.5 208C56.5 203.776 59.7136 200.5 63.5 200.5Z"
-        stroke="currentColor"
-        strokeWidth="3"
-      />
-      <path
-        d="M65.999 209.004L71.999 215.004"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
+        d="M9 2C7.895 2 7 2.895 7 4V20C7 21.105 7.895 22 9 22H19C20.105 22 21 21.105 21 20V8L15 2H9ZM14 3.5L19.5 9H15C14.448 9 14 8.552 14 8V3.5ZM10 12H18V13.5H10V12ZM10 15H18V16.5H10V15ZM10 18H15V19.5H10V18ZM3 6V18C3 19.657 4.343 21 6 21V6H3Z"
+        fill="currentColor"
       />
     </svg>
   );
@@ -118,34 +114,27 @@ const sidebarTopIcons: {
 }[] = [
   { id: 'edit', icon: EditIcon },
   { id: 'robot', icon: RobotIcon },
-  { id: 'search', icon: SearchIcon },
+  { id: 'quiz', icon: QuizIcon },
 ];
 
 /* ─── Main Component ─── */
 
 interface StudyLeftPanelProps {
   model: Model;
+  modelId: string;
   notes: string;
   onNotesChange: (notes: string) => void;
+  selectedPart: ModelPart | null;
 }
 
 export function StudyLeftPanel({
   model,
+  modelId,
   notes,
   onNotesChange,
+  selectedPart,
 }: StudyLeftPanelProps) {
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState<SidebarTab>('edit');
-  const [keywords, setKeywords] = useState<string[]>([
-    '에너지 변환 원리',
-    '직선 운동과 회전 운동',
-    '힘과 토크 전달 원리',
-    '정밀 가공 기술과 소재 특성',
-  ]);
-
-  const removeKeyword = (index: number) => {
-    setKeywords((prev) => prev.filter((_, i) => i !== index));
-  };
 
   return (
     <aside className="h-full flex">
@@ -160,7 +149,6 @@ export function StudyLeftPanel({
                 onClick={() => setActiveTab(item.id)}
                 className="w-[64px] h-[64px] flex items-center justify-center transition-colors relative"
               >
-                {/* Active background */}
                 {isActive && (
                   <div className="absolute inset-2 rounded-xl bg-[#34415C]/50 shadow-[3px_3px_30px_rgba(30,64,175,0.15),-3px_-3px_30px_rgba(30,64,175,0.25)]" />
                 )}
@@ -195,77 +183,116 @@ export function StudyLeftPanel({
             'linear-gradient(180deg, rgba(7, 11, 20, 0.2) 0%, rgba(4, 10, 46, 0.16) 100%)',
         }}
       >
-        {/* Back Button */}
-        <div className="px-5 pt-5">
-          <button
-            onClick={() => router.push('/')}
-            className="flex items-center text-white/90 hover:text-white transition-colors"
-          >
-            <ChevronLeft className="w-6 h-6" />
-            <span className="text-sm ml-0.5">Back</span>
-          </button>
-        </div>
-
-        {/* Model Title */}
-        <div className="px-6 mt-5">
-          <h1 className="text-xl font-bold text-white leading-tight">
-            {model.nameKo}
-          </h1>
-        </div>
-
-        {/* Category */}
-        <div className="px-6 mt-5">
-          <div className="flex items-center gap-6 text-sm">
-            <span className="text-white/50">분류</span>
-            <span className="text-white">기계공학</span>
-          </div>
-        </div>
-
-        {/* Keywords */}
-        <div className="px-6 mt-5">
-          <p className="text-sm text-white/50 mb-3">주요 키워드</p>
-          <div className="flex flex-wrap gap-2">
-            {keywords.map((keyword, index) => (
-              <span
-                key={index}
-                className="inline-flex items-center gap-1.5 h-[26px] px-3 rounded-full text-xs text-white bg-[#60A5FA]/50"
-              >
-                {keyword}
-                <button
-                  onClick={() => removeKeyword(index)}
-                  className="hover:text-white/60 transition-colors shrink-0"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Section Header */}
-        <div className="px-6 mt-8 mb-3">
-          <h2 className="text-lg font-bold text-white">학습 메모</h2>
-        </div>
-
-        {/* Bordered Memo Area */}
-        <div className="px-5 flex-1 min-h-0">
-          <div className="h-full rounded-xl border border-[#595959]/50 p-5 overflow-auto">
-            <textarea
-              value={notes}
-              onChange={(e) => onNotesChange(e.target.value)}
-              placeholder="크랭크샤프트의 회전 운동이 커넥팅 로드를 통해 피스톤의 왕복 운동으로 변환되는 과정을 3D로 확인합니다. 각 부품의 역할과 상호작용을 학습하며 메모를 남겨 보세요."
-              className="w-full h-full bg-transparent text-sm text-white/70 placeholder:text-[#595959] focus:outline-none resize-none leading-relaxed"
-            />
-          </div>
-        </div>
-
-        {/* Bottom Action Button */}
-        <div className="p-5">
-          <button className="w-full h-[68px] rounded-xl bg-[#1E40AF] hover:bg-[#1E3A8A] active:bg-[#1e3580] text-white font-medium transition-colors flex items-center justify-center">
-            학습하기 퀴즈 PDF 생성하기
-          </button>
-        </div>
+        {activeTab === 'edit' && (
+          <EditPanel model={model} notes={notes} onNotesChange={onNotesChange} />
+        )}
+        {activeTab === 'robot' && (
+          <AIChatPanel
+            systemPrompt={model.systemPrompt}
+            selectedPart={selectedPart}
+          />
+        )}
+        {activeTab === 'quiz' && <QuizPanel modelId={modelId} />}
       </div>
     </aside>
+  );
+}
+
+/* ─── Edit Panel (기존 학습 정보 패널) ─── */
+
+function EditPanel({
+  model,
+  notes,
+  onNotesChange,
+}: {
+  model: Model;
+  notes: string;
+  onNotesChange: (notes: string) => void;
+}) {
+  const router = useRouter();
+  const [keywords, setKeywords] = useState<string[]>([
+    '에너지 변환 원리',
+    '직선 운동과 회전 운동',
+    '힘과 토크 전달 원리',
+    '정밀 가공 기술과 소재 특성',
+  ]);
+
+  const removeKeyword = (index: number) => {
+    setKeywords((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  return (
+    <>
+      {/* Back Button */}
+      <div className="px-5 pt-5">
+        <button
+          onClick={() => router.push('/')}
+          className="flex items-center text-white/90 hover:text-white transition-colors"
+        >
+          <ChevronLeft className="w-6 h-6" />
+          <span className="text-sm ml-0.5">Back</span>
+        </button>
+      </div>
+
+      {/* Model Title */}
+      <div className="px-6 mt-5">
+        <h1 className="text-xl font-bold text-white leading-tight">
+          {model.nameKo}
+        </h1>
+      </div>
+
+      {/* Category */}
+      <div className="px-6 mt-5">
+        <div className="flex items-center gap-6 text-sm">
+          <span className="text-white/50">분류</span>
+          <span className="text-white">기계공학</span>
+        </div>
+      </div>
+
+      {/* Keywords */}
+      <div className="px-6 mt-5">
+        <p className="text-sm text-white/50 mb-3">주요 키워드</p>
+        <div className="flex flex-wrap gap-2">
+          {keywords.map((keyword, index) => (
+            <span
+              key={index}
+              className="inline-flex items-center gap-1.5 h-[26px] px-3 rounded-full text-xs text-white bg-[#60A5FA]/50"
+            >
+              {keyword}
+              <button
+                onClick={() => removeKeyword(index)}
+                className="hover:text-white/60 transition-colors shrink-0"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Section Header */}
+      <div className="px-6 mt-8 mb-3">
+        <h2 className="text-lg font-bold text-white">학습 메모</h2>
+      </div>
+
+      {/* Bordered Memo Area */}
+      <div className="px-5 flex-1 min-h-0">
+        <div className="h-full rounded-xl border border-[#595959]/50 p-5 overflow-auto">
+          <textarea
+            value={notes}
+            onChange={(e) => onNotesChange(e.target.value)}
+            placeholder="크랭크샤프트의 회전 운동이 커넥팅 로드를 통해 피스톤의 왕복 운동으로 변환되는 과정을 3D로 확인합니다. 각 부품의 역할과 상호작용을 학습하며 메모를 남겨 보세요."
+            className="w-full h-full bg-transparent text-sm text-white/70 placeholder:text-[#595959] focus:outline-none resize-none leading-relaxed"
+          />
+        </div>
+      </div>
+
+      {/* Bottom Action Button */}
+      <div className="p-5">
+        <button className="w-full h-[68px] rounded-xl bg-[#1E40AF] hover:bg-[#1E3A8A] active:bg-[#1e3580] text-white font-medium transition-colors flex items-center justify-center">
+          학습하기 퀴즈 PDF 생성하기
+        </button>
+      </div>
+    </>
   );
 }

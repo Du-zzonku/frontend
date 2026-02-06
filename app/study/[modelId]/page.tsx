@@ -202,8 +202,14 @@ export default function StudyPage({ params }: PageProps) {
         {/* Left Panel: Icon sidebar + content */}
         <StudyLeftPanel
           model={model}
+          modelId={modelId}
           notes={notes}
           onNotesChange={setNotes}
+          selectedPart={
+            selectedPartId
+              ? model.parts.find((p) => p.id === selectedPartId) ?? null
+              : null
+          }
         />
 
         {/* Center: 3D Viewer + Right Panel overlay */}

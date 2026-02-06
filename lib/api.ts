@@ -1,4 +1,9 @@
-import type { ModelData } from '@/types/model';
+import type {
+  ModelData,
+  Quiz,
+  QuizAnswerItem,
+  QuizResultResponse,
+} from '@/types/model';
 
 export interface ModelSummary {
   modelId: string;
@@ -79,6 +84,56 @@ export async function saveNodes(
 
   if (!response.ok) {
     throw new Error(`Failed to save nodes: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export interface FetchQuizOptions {
+  count?: number;
+  excludedIds?: number[];
+}
+
+export async function fetchQuiz(
+  modelId: string,
+  options: FetchQuizOptions = {}
+): Promise<Quiz[]> {
+  const params = new URLSearchParams();
+
+  if (options.count) {
+    params.append('count', options.count.toString());
+  }
+
+  if (options.excludedIds && options.excludedIds.length > 0) {
+    options.excludedIds.forEach((id) =>
+      params.append('excludedIds', id.toString())
+    );
+  }
+
+  const queryString = params.toString();
+  const url = `/api/models/${modelId}/quiz${queryString ? `?${queryString}` : ''}`;
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch quiz: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function submitQuizAnswers(
+  modelId: string,
+  answers: QuizAnswerItem[]
+): Promise<QuizResultResponse> {
+  const response = await fetch(`/api/models/${modelId}/quiz/answer`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ answers }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to submit quiz: ${response.status}`);
   }
 
   return response.json();

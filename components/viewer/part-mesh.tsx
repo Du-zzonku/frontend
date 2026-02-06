@@ -69,15 +69,13 @@ export function PartMesh({
             const original = originalMaterials.current.get(mesh.uuid) as THREE.MeshStandardMaterial;
             const newMaterial = original.clone();
 
-            newMaterial.map = null;
-
-            newMaterial.color.set("#80eaff");
-            newMaterial.emissive.set('#80eaff');
-            newMaterial.emissiveIntensity = 1.5; // Bloom 강도
-            newMaterial.metalness = 1.0;
-            newMaterial.roughness = 0.25;
-            newMaterial.envMapIntensity = 1.0;
-            newMaterial.toneMapped = true; // 색상 보정 끄기
+            const baseColor = materialType ? materialConfig.color : color;
+            newMaterial.color = new THREE.Color(baseColor);
+            newMaterial.metalness = materialConfig.metalness;
+            newMaterial.roughness = materialConfig.roughness;
+            newMaterial.emissive.set("#3B82F6");
+            newMaterial.emissiveIntensity = 1.2; // Bloom 강도
+            newMaterial.toneMapped = true; 
 
             mesh.material = newMaterial;
 
@@ -96,8 +94,8 @@ export function PartMesh({
 
             if (isHovered) {
               // 호버 효과
-              restoreMaterial.emissive.set('#80eaff');
-              restoreMaterial.emissiveIntensity = 1.0;
+              restoreMaterial.emissive.set('#3B82F6');
+              restoreMaterial.emissiveIntensity = 0.7;
               restoreMaterial.toneMapped = true;
             } else {
               // 평상시
@@ -116,7 +114,7 @@ export function PartMesh({
             const edgesGeometry = new THREE.EdgesGeometry(mesh.geometry, 30);
             const edgesMaterial = new THREE.LineBasicMaterial({
               color: 0x000000,
-              linewidth: 1,
+              linewidth: 0.3,
             });
             const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
             edges.userData.isEdgeLine = true;

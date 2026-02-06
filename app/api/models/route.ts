@@ -15,12 +15,6 @@ interface ModelSliceDto {
   pageNumber: number;
 }
 
-function toAbsoluteUrl(path: string): string {
-  if (!path) return path;
-  if (path.startsWith('http://') || path.startsWith('https://')) return path;
-  return `${API_BASE_URL}${path}`;
-}
-
 export async function GET() {
   try {
     const response = await fetch(`${API_BASE_URL}/api/models`);
@@ -33,13 +27,7 @@ export async function GET() {
     }
 
     const data: ModelSliceDto = await response.json();
-
-    const models = data.models.map((model) => ({
-      ...model,
-      thumbnailUrl: toAbsoluteUrl(model.thumbnailUrl),
-    }));
-
-    return NextResponse.json(models);
+    return NextResponse.json(data.models);
   } catch {
     return NextResponse.json(
       { error: 'Failed to connect to backend' },

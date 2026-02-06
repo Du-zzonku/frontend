@@ -93,6 +93,19 @@ export const MATERIAL_PRESET: Record<MaterialType, MaterialPresetConfig> = {
   },
 };
 
+/** 모델 요약 정보 (목록 조회용) */
+export interface ModelSummary {
+  modelId: string;
+  overview: string;
+}
+
+/** 모델 목록 페이징 응답 */
+export interface ModelSliceResponse {
+  models: ModelSummary[];
+  hasNext: boolean;
+  pageNumber: number;
+}
+
 /** 모델 메타데이터 */
 export interface Model {
   modelId: string;
@@ -151,7 +164,7 @@ export interface QuizOption {
 /** 퀴즈 문제 */
 export interface Quiz {
   questionId: number;
-  type: 'MULTIPLE_CHOICE' | 'SUBJECTIVE';
+  type: 'MULTIPLE_CHOICE' | 'SHORT_ANSWER';
   question: string;
   options: QuizOption[];
 }
@@ -159,7 +172,7 @@ export interface Quiz {
 /** 퀴즈 답변 아이템 */
 export interface QuizAnswerItem {
   questionId: number;
-  type: 'MULTIPLE_CHOICE' | 'SUBJECTIVE';
+  type: 'MULTIPLE_CHOICE' | 'SHORT_ANSWER';
   selectedOptionNo?: number;
   subjectiveAnswer?: string;
 }

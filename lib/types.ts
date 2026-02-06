@@ -1,5 +1,5 @@
-export type Vector3 = [number, number, number];
-export type Quaternion = [number, number, number, number];
+export type { Vector3, Quaternion } from '@/types/model';
+import type { Vector3, Quaternion, MaterialType } from '@/types/model';
 
 /** 부품 인스턴스 (노드) - 같은 부품이 여러 위치에 배치될 수 있음 */
 export interface PartInstance {
@@ -20,7 +20,7 @@ export interface ModelPart {
   role: string;
   material: string;
   glbPath: string;
-  materialType?: import('@/types/model').MaterialType;
+  materialType?: MaterialType;
   basePosition?: Vector3;
   baseRotation?: [number, number, number];
   explodeOffset?: Vector3;

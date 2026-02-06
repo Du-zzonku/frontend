@@ -4,7 +4,14 @@ import Link from 'next/link';
 
 import { Box, ChevronRight } from 'lucide-react';
 
-import type { ModelSummary } from '@/lib/api';
+import type { ModelSummary } from '@/types/model';
+
+/** modelId를 사람이 읽기 좋은 형태로 변환 (예: "v4_engine" -> "V4 Engine") */
+function formatModelId(modelId: string): string {
+  return modelId
+    .replace(/[_-]/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
 interface ModelCardProps {
   model: ModelSummary;
@@ -25,7 +32,7 @@ export function ModelCard({ model }: ModelCardProps) {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-              {model.title}
+              {formatModelId(model.modelId)}
             </h3>
             <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
           </div>

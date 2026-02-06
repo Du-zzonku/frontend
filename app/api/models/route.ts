@@ -1,23 +1,28 @@
 import { NextResponse } from 'next/server';
 
+import type { ModelSliceResponse } from '@/types/model';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 
-interface ModelSummary {
-  modelId: string;
-  title: string;
-  thumbnailUrl: string;
-  overview: string;
-}
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
 
-interface ModelSliceDto {
-  models: ModelSummary[];
-  hasNext: boolean;
-  pageNumber: number;
-}
+  // 프론트엔드에서 전달된 pagination params를 백엔드로 전달
+  const backendParams = new URLSearchParams();
 
-export async function GET() {
+  const page = searchParams.get('page');
+  const size = searchParams.get('size');
+  const sortValues = searchParams.getAll('sort');
+
+  if (page) backendParams.append('page', page);
+  if (size) backendParams.append('size', size);
+  sortValues.forEach((s) => backendParams.append('sort', s));
+
+  const queryString = backendParams.toString();
+  const url = `${API_BASE_URL}/api/models${queryString ? `?${queryString}` : ''}`;
+
   try {
-    const response = await fetch(`${API_BASE_URL}/api/models`);
+    const response = await fetch(url);
 
     if (!response.ok) {
       return NextResponse.json(
@@ -26,8 +31,8 @@ export async function GET() {
       );
     }
 
-    const data: ModelSliceDto = await response.json();
-    return NextResponse.json(data.models);
+    const data: ModelSliceResponse = await response.json();
+    return NextResponse.json(data);
   } catch {
     return NextResponse.json(
       { error: 'Failed to connect to backend' },

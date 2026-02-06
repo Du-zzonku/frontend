@@ -24,7 +24,8 @@ import {
 
 import { Header } from '@/components/header';
 import { ModelCard } from '@/components/model-card';
-import { type ModelSummary, fetchModels } from '@/lib/api';
+import type { ModelSummary } from '@/types/model';
+import { fetchModels } from '@/lib/api';
 
 export default function HomePage() {
   const [models, setModels] = useState<ModelSummary[]>([]);

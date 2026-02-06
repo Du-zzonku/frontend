@@ -1,21 +1,13 @@
 import type {
   ModelData,
+  ModelSummary,
+  ModelSliceResponse,
   Quiz,
   QuizAnswerItem,
   QuizResultResponse,
 } from '@/types/model';
 
-export interface ModelSummary {
-  modelId: string;
-  title: string;
-  thumbnailUrl: string;
-  overview: string;
-}
-
-export interface ChatMessage {
-  role: 'user' | 'assistant';
-  content: string;
-}
+export type { ModelSummary };
 
 export interface SaveNodesRequest {
   nodes: ModelData['nodes'];
@@ -26,14 +18,38 @@ export interface SaveNodesResponse {
   message: string;
 }
 
-export async function fetchModels(): Promise<ModelSummary[]> {
-  const response = await fetch('/api/models');
+export interface FetchModelsOptions {
+  page?: number;
+  size?: number;
+  sort?: string[];
+}
+
+export async function fetchModels(
+  options: FetchModelsOptions = {}
+): Promise<ModelSummary[]> {
+  const params = new URLSearchParams();
+
+  if (options.page !== undefined) {
+    params.append('page', options.page.toString());
+  }
+  if (options.size !== undefined) {
+    params.append('size', options.size.toString());
+  }
+  if (options.sort) {
+    options.sort.forEach((s) => params.append('sort', s));
+  }
+
+  const queryString = params.toString();
+  const url = `/api/models${queryString ? `?${queryString}` : ''}`;
+
+  const response = await fetch(url);
 
   if (!response.ok) {
     throw new Error(`Failed to fetch models: ${response.status}`);
   }
 
-  return response.json();
+  const data: ModelSliceResponse = await response.json();
+  return data.models;
 }
 
 export async function fetchViewerData(modelId: string): Promise<ModelData> {

@@ -6,6 +6,8 @@ import { Geist, Geist_Mono } from 'next/font/google';
 
 import { Analytics } from '@vercel/analytics/next';
 
+import { QueryProvider } from '@/components/providers/query-provider';
+
 import './globals.css';
 import { MSWProvider } from './msw-provider';
 
@@ -44,7 +46,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`font-sans antialiased`}>
         <MSWProvider>
-          {children}
+          <QueryProvider>
+            {children}
+          </QueryProvider>
           <Analytics />
         </MSWProvider>
       </body>

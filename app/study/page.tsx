@@ -1,22 +1,20 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-
 import Link from 'next/link';
 
 import { ChevronDown, Loader2 } from 'lucide-react';
+import { useInView } from 'react-intersection-observer';
 
 import { SimvexLogo } from '@/components/study-header';
 import {
   ComingSoonCard,
   StudyModelCard,
 } from '@/components/study/study-model-card';
-import { fetchModelsPage } from '@/lib/api';
+import { useModels } from '@/hooks/use-models';
 import {
   BIOMEDICAL_MODELS,
   BIO_ENGINEERING_MODELS,
 } from '@/lib/constants/coming-soon-models';
-import type { ModelSummary } from '@/types/api';
 
 const navItems = [
   { label: 'Home', href: '/' },
@@ -80,59 +78,23 @@ function HeroSection() {
   );
 }
 
-const PAGE_SIZE = 6;
-
 export default function StudyPage() {
-  const [models, setModels] = useState<ModelSummary[]>([]);
-  const [page, setPage] = useState(0);
-  const [hasNext, setHasNext] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: models,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+  } = useModels();
 
-  const observerRef = useRef<HTMLDivElement>(null);
-  const isFetchingRef = useRef(false);
-
-  const loadMore = useCallback(async () => {
-    if (isFetchingRef.current || !hasNext) return;
-    isFetchingRef.current = true;
-    setIsLoading(true);
-
-    try {
-      const data = await fetchModelsPage({ page, size: PAGE_SIZE });
-      setModels((prev) => [...prev, ...data.models]);
-      setHasNext(data.hasNext);
-      setPage((prev) => prev + 1);
-    } catch (err) {
-      console.error('Failed to fetch models:', err);
-      setError('모델 목록을 불러오는데 실패했습니다.');
-    } finally {
-      setIsLoading(false);
-      setIsInitialLoading(false);
-      isFetchingRef.current = false;
-    }
-  }, [page, hasNext]);
-
-  useEffect(() => {
-    loadMore();
-  }, []);
-
-  useEffect(() => {
-    const el = observerRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNext && !isFetchingRef.current) {
-          loadMore();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [loadMore, hasNext]);
+  const { ref } = useInView({
+    onChange: (inView) => {
+      if (inView && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+  });
 
   return (
     <div className="min-h-screen bg-[#070B14]">
@@ -143,27 +105,29 @@ export default function StudyPage() {
         <section>
           <h2 className="text-2xl font-bold text-[#FAFAFA] mb-8">기계공학</h2>
 
-          {isInitialLoading ? (
+          {isLoading ? (
             <div className="flex items-center justify-center py-20">
               <Loader2 className="w-8 h-8 text-[#3B82F6] animate-spin" />
               <span className="ml-3 text-[#FAFAFA]/50">
                 모델을 불러오는 중...
               </span>
             </div>
-          ) : error ? (
+          ) : isError ? (
             <div className="text-center py-20">
-              <p className="text-red-400">{error}</p>
+              <p className="text-red-400">
+                모델 목록을 불러오는데 실패했습니다.
+              </p>
             </div>
           ) : (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {models.map((model) => (
+                {models?.map((model) => (
                   <StudyModelCard key={model.modelId} model={model} />
                 ))}
               </div>
 
-              <div ref={observerRef} className="h-10 mt-8">
-                {isLoading && (
+              <div ref={ref} className="h-10 mt-8">
+                {isFetchingNextPage && (
                   <div className="flex items-center justify-center">
                     <Loader2 className="w-6 h-6 text-[#3B82F6] animate-spin" />
                     <span className="ml-2 text-sm text-[#FAFAFA]/40">

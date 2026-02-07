@@ -28,7 +28,7 @@ const navItems = [
 
 function StudyNav() {
   return (
-    <header className="h-16 border-b border-[#1E3A8A]/20 bg-[#070B14] flex items-center justify-between px-8">
+    <header className="h-20 border-b border-[#1E3A8A]/20 bg-[#070B14] flex items-center justify-between px-8">
       <div className="flex items-center gap-10">
         <Link href="/" className="shrink-0">
           <SimvexLogo />

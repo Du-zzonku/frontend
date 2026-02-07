@@ -200,6 +200,7 @@ export const ManualControls = forwardRef<ControlsHandle, ManualControlsProps>(
               const center = box.getCenter(new THREE.Vector3());
               const size = box.getSize(new THREE.Vector3());
               const maxDim = Math.max(size.x, size.y, size.z);
+
               const fov = (camera as THREE.PerspectiveCamera).fov;
               const fovRad = (fov * Math.PI) / 180;
 
@@ -223,32 +224,6 @@ export const ManualControls = forwardRef<ControlsHandle, ManualControlsProps>(
 
               controlsRef.current.target.copy(center);
               camera.lookAt(center);
-              camera.updateProjectionMatrix();
-              camera.updateMatrixWorld();
-
-              const canvasWidth = gl.domElement.clientWidth;
-              const leftPanelOverlayPx = 394;
-              const rightPanelPx = 406;
-
-              const visibleCenterPx =
-                (leftPanelOverlayPx + (canvasWidth - rightPanelPx)) / 2;
-              const targetNDCx = (2 * visibleCenterPx) / canvasWidth - 1;
-
-              const centerNDC = center.clone().project(camera);
-
-              const ndcShift = centerNDC.x - targetNDCx;
-              const halfWidth =
-                dist *
-                Math.tan(fovRad / 2) *
-                (canvasWidth / gl.domElement.clientHeight);
-              const panWorld = ndcShift * halfWidth;
-
-              const rightVec = new THREE.Vector3();
-              rightVec.setFromMatrixColumn(camera.matrixWorld, 0);
-              const panOffset = rightVec.multiplyScalar(panWorld);
-
-              controlsRef.current.target.add(panOffset);
-              camera.position.add(panOffset);
               controlsRef.current.update();
 
               isInitializedRef.current = true;

@@ -6,6 +6,7 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -23,6 +24,80 @@ import type { CameraState, Model } from '@/lib/types';
 import { useViewerStore } from '@/store/viewer-store';
 
 import { ModelViewer } from './model-viewer';
+
+// 셰이더 기반 바닥 그리드 컴포넌트
+function FloorGrid() {
+  const shaderMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      transparent: true,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+      uniforms: {
+        uGridSize: { value: 0.15 },
+        uGridThickness: { value: 0.003 },
+        uMainColor: { value: new THREE.Color('#0a3d6b') },
+        uSubColor: { value: new THREE.Color('#071e35') },
+        uFadeRadius: { value: 4.0 },
+        uOpacity: { value: 0.7 },
+      },
+      vertexShader: /* glsl */ `
+        varying vec2 vUv;
+        varying vec3 vWorldPos;
+        void main() {
+          vUv = uv;
+          vec4 worldPos = modelMatrix * vec4(position, 1.0);
+          vWorldPos = worldPos.xyz;
+          gl_Position = projectionMatrix * viewMatrix * worldPos;
+        }
+      `,
+      fragmentShader: /* glsl */ `
+        uniform float uGridSize;
+        uniform float uGridThickness;
+        uniform vec3 uMainColor;
+        uniform vec3 uSubColor;
+        uniform float uFadeRadius;
+        uniform float uOpacity;
+        varying vec2 vUv;
+        varying vec3 vWorldPos;
+
+        void main() {
+          vec2 worldXZ = vWorldPos.xz;
+
+          // 메인 그리드 라인
+          vec2 grid = abs(fract(worldXZ / uGridSize - 0.5) - 0.5) / fwidth(worldXZ / uGridSize);
+          float mainLine = min(grid.x, grid.y);
+          float mainGrid = 1.0 - min(mainLine, 1.0);
+
+          // 서브 그리드 (5배 큰 간격)
+          float subGridSize = uGridSize * 5.0;
+          vec2 subGrid = abs(fract(worldXZ / subGridSize - 0.5) - 0.5) / fwidth(worldXZ / subGridSize);
+          float subLine = min(subGrid.x, subGrid.y);
+          float subGridVal = 1.0 - min(subLine, 1.0);
+
+          // 컬러 혼합 (서브 그리드는 더 밝게)
+          vec3 color = mix(uSubColor, uMainColor, mainGrid * 0.6 + subGridVal * 1.0);
+
+          // 중앙에서 바깥으로 원형 페이드
+          float dist = length(worldXZ);
+          float fade = 1.0 - smoothstep(uFadeRadius * 0.3, uFadeRadius, dist);
+
+          // 그리드 라인이 없는 부분은 완전 투명
+          float lineAlpha = max(mainGrid * 0.4, subGridVal * 0.8);
+          float alpha = lineAlpha * fade * uOpacity;
+
+          gl_FragColor = vec4(color, alpha);
+        }
+      `,
+    });
+  }, []);
+
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
+      <planeGeometry args={[12, 12, 1, 1]} />
+      <primitive object={shaderMaterial} attach="material" />
+    </mesh>
+  );
+}
 
 interface SceneProps {
   model: Model;
@@ -71,17 +146,34 @@ function zoomPercentToDistance(percent: number): number {
   return MAX_DISTANCE - (percent / 100) * (MAX_DISTANCE - MIN_DISTANCE);
 }
 
+// 사용자가 한 번도 카메라를 조작하지 않은 기본 상태인지 확인
+function isUninitializedCameraState(state: CameraState | null): boolean {
+  if (!state) return true;
+  const { position, target } = state;
+  return (
+    position[0] === 1 &&
+    position[1] === 0.5 &&
+    position[2] === 1 &&
+    target[0] === 0 &&
+    target[1] === 0 &&
+    target[2] === 0
+  );
+}
+
 const ManualControls = forwardRef<ControlsHandle, ManualControlsProps>(
   function ManualControls(
     { initialCameraState, onCameraChange, onZoomChange },
     ref
   ) {
     const controlsRef = useRef<OrbitControlsImpl>(null);
-    const { camera } = useThree();
+    const { camera, scene, gl } = useThree();
     const isRotatingRef = useRef(false);
     const rotateDirectionRef = useRef(0);
     const isInitializedRef = useRef(false);
     const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const autoFitFrameCount = useRef(0);
+    // auto-fit 대상 여부: null이거나 기본값(한 번도 조작 안 한 상태)이면 auto-fit
+    const needsAutoFit = useRef(isUninitializedCameraState(initialCameraState));
 
     const getCurrentDistance = useCallback(() => {
       if (controlsRef.current) {
@@ -90,9 +182,11 @@ const ManualControls = forwardRef<ControlsHandle, ManualControlsProps>(
       return 1.5;
     }, [camera]);
 
+    // 저장된 카메라 상태 복원 (사용자가 직접 조작했던 경우만)
     useEffect(() => {
       if (
         initialCameraState &&
+        !needsAutoFit.current &&
         !isInitializedRef.current &&
         controlsRef.current
       ) {
@@ -192,6 +286,69 @@ const ManualControls = forwardRef<ControlsHandle, ManualControlsProps>(
     }));
 
     useFrame((_, delta) => {
+      if (
+        !isInitializedRef.current &&
+        needsAutoFit.current &&
+        controlsRef.current
+      ) {
+        autoFitFrameCount.current++;
+        if (autoFitFrameCount.current >= 10) {
+          const modelGroup = scene.getObjectByName('model-root');
+          if (modelGroup) {
+            const box = new THREE.Box3().setFromObject(modelGroup);
+            if (!box.isEmpty()) {
+              const center = box.getCenter(new THREE.Vector3());
+              const size = box.getSize(new THREE.Vector3());
+              const maxDim = Math.max(size.x, size.y, size.z);
+              const fov = (camera as THREE.PerspectiveCamera).fov;
+
+              let dist = maxDim / 2 / Math.tan((fov * Math.PI) / 360);
+              dist *= 2.0;
+              dist = Math.max(dist, MIN_DISTANCE);
+              dist = Math.min(dist, MAX_DISTANCE);
+
+              camera.position.set(
+                center.x + dist * 0.6,
+                center.y + dist * 0.5,
+                center.z + dist * 0.6
+              );
+
+              controlsRef.current.target.copy(center);
+              camera.lookAt(center);
+              camera.updateMatrixWorld();
+
+              const canvasWidth = gl.domElement.clientWidth;
+              const canvasHeight = gl.domElement.clientHeight;
+              const rightPanelPx = 406;
+              const shiftPx = rightPanelPx / 2;
+              const fovRad = (fov * Math.PI) / 180;
+              const worldHeight = 2 * dist * Math.tan(fovRad / 2);
+              const aspect = canvasWidth / canvasHeight;
+              const worldWidth = worldHeight * aspect;
+              const shiftWorld = (shiftPx / canvasWidth) * worldWidth;
+
+              const rightVec = new THREE.Vector3();
+              rightVec.setFromMatrixColumn(camera.matrixWorld, 0);
+              const panOffset = rightVec.multiplyScalar(shiftWorld);
+
+              controlsRef.current.target.add(panOffset);
+              camera.position.add(panOffset);
+              controlsRef.current.update();
+
+              isInitializedRef.current = true;
+              needsAutoFit.current = false;
+
+              const distance = camera.position.distanceTo(
+                controlsRef.current.target
+              );
+              onZoomChange(distanceToZoomPercent(distance));
+              debouncedSave();
+            }
+          }
+        }
+      }
+
+      // 수동 회전 처리
       if (controlsRef.current && isRotatingRef.current) {
         const rotateSpeed = 2;
         const angle = rotateDirectionRef.current * rotateSpeed * delta;
@@ -287,14 +444,16 @@ function CanvasContent({
         />
       </Suspense>
 
-      <EffectComposer enableNormalPass>
-        <Bloom
-          luminanceThreshold={0.5} // 이 값보다 밝은 빛만 번지게 함 (중요)
-          mipmapBlur // 부드러운 번짐
-          intensity={0.5} // 번짐 강도
-          radius={0.5} // 번짐 반경
-        />
-      </EffectComposer>
+      <Suspense fallback={null}>
+        <EffectComposer>
+          <Bloom
+            luminanceThreshold={0.5}
+            mipmapBlur
+            intensity={0.5}
+            radius={0.5}
+          />
+        </EffectComposer>
+      </Suspense>
 
       <ContactShadows
         position={[0, -0.01, 0]}
@@ -305,16 +464,13 @@ function CanvasContent({
         color="#000000"
       />
 
+      <FloorGrid />
+
       <ManualControls
         ref={controlsRef}
         initialCameraState={initialCameraState}
         onCameraChange={onCameraChange}
         onZoomChange={onZoomChange}
-      />
-
-      <gridHelper
-        args={[20, 20, '#1e3a5f', '#0d1f33']}
-        position={[0, -0.1, 0]}
       />
     </>
   );
@@ -322,6 +478,8 @@ function CanvasContent({
 
 interface SceneWithControlsProps extends SceneProps {
   onExplodeChange: (value: number) => void;
+  isFullscreen?: boolean;
+  onToggleFullscreen?: () => void;
 }
 
 export function Scene({
@@ -331,6 +489,8 @@ export function Scene({
   onPartClick,
   onPartHover,
   onExplodeChange,
+  isFullscreen = false,
+  onToggleFullscreen,
 }: SceneWithControlsProps) {
   const controlsRef = useRef<ControlsHandle>(null);
   const [isRotatingLeft, setIsRotatingLeft] = useState(false);
@@ -425,7 +585,7 @@ export function Scene({
         <div className="absolute inset-0 grid-bg opacity-20 pointer-events-none" />
 
         {contextLost ? (
-          <div className="w-full h-full flex items-center justify-center bg-[#070b14]">
+          <div className="w-full h-full flex items-center justify-center bg-[#070b14] pr-[406px]">
             <div className="flex flex-col items-center gap-3">
               <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
               <span className="text-primary">3D 뷰어 복구 중...</span>
@@ -463,106 +623,109 @@ export function Scene({
         )}
       </div>
 
-      {/* Top-right control buttons */}
-      <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
-        <button
-          className={`w-10 h-10 rounded-lg bg-[#0d1321]/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors ${
-            isRotatingLeft ? 'text-primary border-primary/50 bg-primary/10' : ''
-          }`}
-          onMouseDown={handleRotateLeftStart}
-          onMouseUp={handleRotateLeftEnd}
-          onMouseLeave={handleRotateLeftEnd}
-          onTouchStart={handleRotateLeftStart}
-          onTouchEnd={handleRotateLeftEnd}
-          title="왼쪽으로 회전"
-        >
-          <RotateCcw className="w-4 h-4" />
-        </button>
-        <button
-          className={`w-10 h-10 rounded-lg bg-[#0d1321]/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors ${
-            isRotatingRight
-              ? 'text-primary border-primary/50 bg-primary/10'
-              : ''
-          }`}
-          onMouseDown={handleRotateRightStart}
-          onMouseUp={handleRotateRightEnd}
-          onMouseLeave={handleRotateRightEnd}
-          onTouchStart={handleRotateRightStart}
-          onTouchEnd={handleRotateRightEnd}
-          title="오른쪽으로 회전"
-        >
-          <RotateCw className="w-4 h-4" />
-        </button>
-        <button
-          className="w-10 h-10 rounded-lg bg-[#0d1321]/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors"
-          title="전체화면"
-        >
-          <Maximize2 className="w-4 h-4" />
-        </button>
-      </div>
-
-      {/* Bottom sliders */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex items-end gap-8">
-        {/* Explode Slider */}
-        <div className="flex flex-col items-center gap-2">
-          <span className="text-xs text-muted-foreground font-medium">
-            분해도
-          </span>
-          <div className="w-[200px] relative">
-            <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-linear-to-r from-primary/60 to-primary rounded-full transition-all duration-150"
-                style={{ width: `${explodeValue}%` }}
-              />
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={explodeValue}
-              onChange={(e) => onExplodeChange(Number(e.target.value))}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            />
-            <div
-              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full shadow-[0_0_8px_rgba(0,212,255,0.5)] pointer-events-none transition-all duration-150"
-              style={{ left: `calc(${explodeValue}% - 6px)` }}
-            />
-          </div>
-          <span className="text-[10px] text-primary font-mono">
-            {explodeValue}%
-          </span>
+      {/* Top-right control buttons - 풀스크린에서는 숨김 */}
+      {!isFullscreen && (
+        <div className="absolute top-3 right-[418px] flex items-center z-10">
+          <button
+            className={`w-12 h-12 rounded-xl bg-[#595959] flex items-center justify-center text-[#FAFAFA] hover:bg-[#6b6b6b] transition-colors ${
+              isRotatingLeft ? 'bg-[#6b6b6b]' : ''
+            }`}
+            onMouseDown={handleRotateLeftStart}
+            onMouseUp={handleRotateLeftEnd}
+            onMouseLeave={handleRotateLeftEnd}
+            onTouchStart={handleRotateLeftStart}
+            onTouchEnd={handleRotateLeftEnd}
+            title="왼쪽으로 회전"
+          >
+            <RotateCcw className="w-6 h-6" />
+          </button>
+          <div className="w-5" />
+          <button
+            className={`w-12 h-12 rounded-xl bg-[#595959] flex items-center justify-center text-[#FAFAFA] hover:bg-[#6b6b6b] transition-colors ${
+              isRotatingRight ? 'bg-[#6b6b6b]' : ''
+            }`}
+            onMouseDown={handleRotateRightStart}
+            onMouseUp={handleRotateRightEnd}
+            onMouseLeave={handleRotateRightEnd}
+            onTouchStart={handleRotateRightStart}
+            onTouchEnd={handleRotateRightEnd}
+            title="오른쪽으로 회전"
+          >
+            <RotateCw className="w-6 h-6" />
+          </button>
+          <div className="w-[76px]" />
+          <button
+            className="w-12 h-12 rounded-xl bg-[#595959] flex items-center justify-center text-[#FAFAFA] hover:bg-[#6b6b6b] transition-colors"
+            onClick={onToggleFullscreen}
+            title="전체화면"
+          >
+            <Maximize2 className="w-6 h-6" />
+          </button>
         </div>
+      )}
 
-        {/* Zoom Slider */}
-        <div className="flex flex-col items-center gap-2">
-          <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-            Zoom
-          </span>
-          <div className="w-[200px] relative">
-            <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-linear-to-r from-primary/60 to-primary rounded-full transition-all duration-150"
-                style={{ width: `${zoomValue}%` }}
-              />
+      {/* Bottom sliders - 풀스크린에서는 숨김 */}
+      {!isFullscreen && (
+        <div className="absolute bottom-5 left-5 right-[418px] z-10">
+          <div className="flex gap-12">
+            {/* Explode Slider - 분해도 */}
+            <div className="flex-1 flex flex-col items-start">
+              <span className="text-[13px] font-bold text-[#FAFAFA]">
+                분해도
+              </span>
+              <span className="text-[11px] text-[#FAFAFA]/80 mt-1">
+                {explodeValue}%
+              </span>
+              <div className="w-full relative h-5 flex items-center mt-1.5">
+                <div className="w-full h-[3px] bg-[#FAFAFA]/50 rounded-full" />
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={explodeValue}
+                  onChange={(e) => onExplodeChange(Number(e.target.value))}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-[#FAFAFA] rounded-full pointer-events-none transition-all duration-150"
+                  style={{
+                    left: `calc(${explodeValue}% - 8px)`,
+                    boxShadow: '2px 2px 20px #172554, -2px -2px 20px #172554',
+                  }}
+                />
+              </div>
             </div>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={zoomValue}
-              onChange={(e) => handleZoomSliderChange(Number(e.target.value))}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            />
-            <div
-              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full shadow-[0_0_8px_rgba(0,212,255,0.5)] pointer-events-none transition-all duration-150"
-              style={{ left: `calc(${zoomValue}% - 6px)` }}
-            />
+
+            {/* Zoom Slider */}
+            <div className="flex-1 flex flex-col items-start">
+              <span className="text-[13px] font-bold text-[#FAFAFA] uppercase tracking-wider">
+                ZOOM
+              </span>
+              <span className="text-[11px] text-[#FAFAFA]/80 mt-1">IN</span>
+              <div className="w-full relative h-5 flex items-center mt-1.5">
+                <div className="w-full h-[3px] bg-[#FAFAFA]/50 rounded-full" />
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={zoomValue}
+                  onChange={(e) =>
+                    handleZoomSliderChange(Number(e.target.value))
+                  }
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-[#FAFAFA] rounded-full pointer-events-none transition-all duration-150"
+                  style={{
+                    left: `calc(${zoomValue}% - 8px)`,
+                    boxShadow: '2px 2px 20px #172554, -2px -2px 20px #172554',
+                  }}
+                />
+              </div>
+            </div>
           </div>
-          <span className="text-[10px] text-muted-foreground uppercase">
-            IN
-          </span>
         </div>
-      </div>
+      )}
     </div>
   );
 }

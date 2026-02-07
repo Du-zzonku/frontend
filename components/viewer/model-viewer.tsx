@@ -47,7 +47,7 @@ export function ModelViewer({
 
   const instancedParts = useMemo(() => {
     const result: InstancedPart[] = [];
-    const sliderValue = explodeValue / 100; // 0~1 범위로 변환
+    const sliderValue = explodeValue / 100;
 
     for (const part of model.parts) {
       if (part.instances && part.instances.length > 0) {
@@ -114,10 +114,10 @@ export function ModelViewer({
   }, [model.parts]);
 
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} name="model-root">
       {instancedParts.map((inst) => {
         const part = model.parts.find((p) => p.id === inst.partId)!;
-        const isSelected = (selectedPartId === inst.partId);
+        const isSelected = selectedPartId === inst.partId;
 
         return (
           <PartMesh

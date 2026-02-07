@@ -1,5 +1,7 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
 function SimvexLogo() {
   return (
     <svg
@@ -146,18 +148,19 @@ interface StudyHeaderProps {
 }
 
 export function StudyHeader({ category = '기계공학' }: StudyHeaderProps) {
+  const router = useRouter();
+
   return (
     <header className="h-[100px] bg-[#0a0f1a] border-b border-[#595959]/30 flex items-center px-6">
       <div className="flex items-center gap-6">
-        {/* Logo */}
-        <SimvexLogo />
+        <button onClick={() => router.push('/')} className="cursor-pointer">
+          <SimvexLogo />
+        </button>
 
-        {/* Study Tab */}
         <button className="px-8 py-2.5 rounded-full border border-[#595959] bg-[#141517]/30 text-white text-base font-medium tracking-wide">
           Study
         </button>
 
-        {/* Category Dropdown */}
         <button className="flex items-center gap-1 text-white text-sm">
           {category}
           <ChevronDownIcon />

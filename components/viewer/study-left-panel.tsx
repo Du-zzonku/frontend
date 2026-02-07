@@ -14,8 +14,6 @@ import { QuizPanel } from './panels/quiz-panel';
 
 type SidebarTab = 'edit' | 'robot' | 'quiz';
 
-/* ─── Custom SVG Icons from Figma ─── */
-
 function EditIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -106,8 +104,6 @@ function SettingsIcon({ className }: { className?: string }) {
   );
 }
 
-/* ─── Sidebar Config ─── */
-
 const sidebarTopIcons: {
   id: SidebarTab;
   icon: React.ComponentType<{ className?: string }>;
@@ -116,8 +112,6 @@ const sidebarTopIcons: {
   { id: 'robot', icon: RobotIcon },
   { id: 'quiz', icon: QuizIcon },
 ];
-
-/* ─── Main Component ─── */
 
 interface StudyLeftPanelProps {
   model: Model;
@@ -141,9 +135,8 @@ export function StudyLeftPanel({
   };
 
   return (
-    <aside className="h-full flex">
-      {/* Icon Strip */}
-      <div className="w-[64px] shrink-0 flex flex-col justify-between border-r border-border bg-[#080d1a]">
+    <aside className="h-full relative flex shrink-0">
+      <div className="w-[64px] shrink-0 flex flex-col justify-between border-r border-border bg-[#080d1a] z-20">
         <div className="flex flex-col items-center pt-2">
           {sidebarTopIcons.map((item) => {
             const isActive = activeTab === item.id;
@@ -177,17 +170,17 @@ export function StudyLeftPanel({
         </div>
       </div>
 
-      {/* Content Panel */}
       <div
         className={cn(
-          'shrink-0 flex flex-col overflow-hidden transition-[width,opacity,border-width] duration-300 ease-in-out',
+          'absolute left-[64px] top-0 bottom-0 w-[394px] flex flex-col overflow-hidden z-10',
+          'transition-[transform,opacity] duration-300 ease-in-out',
           activeTab !== null
-            ? 'w-[394px] opacity-100 rounded-r-[20px] border-y border-r border-[#595959]/50'
-            : 'w-0 opacity-0 border-0'
+            ? 'translate-x-0 opacity-100 rounded-r-[20px] border-y border-r border-[#595959]/50'
+            : '-translate-x-full opacity-0 pointer-events-none border-0'
         )}
         style={{
           background:
-            'linear-gradient(180deg, rgba(7, 11, 20, 0.2) 0%, rgba(4, 10, 46, 0.16) 100%)',
+            'linear-gradient(180deg, rgba(7, 11, 20, 0.95) 0%, rgba(4, 10, 46, 0.92) 100%)',
         }}
       >
         <div className="w-[394px] h-full flex flex-col">
@@ -210,8 +203,6 @@ export function StudyLeftPanel({
     </aside>
   );
 }
-
-/* ─── Edit Panel (기존 학습 정보 패널) ─── */
 
 function EditPanel({
   model,
@@ -236,7 +227,6 @@ function EditPanel({
 
   return (
     <>
-      {/* Back Button */}
       <div className="px-5 pt-5">
         <button
           onClick={() => router.push('/')}
@@ -247,14 +237,12 @@ function EditPanel({
         </button>
       </div>
 
-      {/* Model Title */}
       <div className="px-6 mt-5">
         <h1 className="text-xl font-bold text-white leading-tight">
           {model.nameKo}
         </h1>
       </div>
 
-      {/* Category */}
       <div className="px-6 mt-5">
         <div className="flex items-center gap-6 text-sm">
           <span className="text-white/50">분류</span>
@@ -262,7 +250,6 @@ function EditPanel({
         </div>
       </div>
 
-      {/* Keywords */}
       <div className="px-6 mt-5">
         <p className="text-sm text-white/50 mb-3">주요 키워드</p>
         <div className="flex flex-wrap gap-2">
@@ -283,12 +270,10 @@ function EditPanel({
         </div>
       </div>
 
-      {/* Section Header */}
       <div className="px-6 mt-8 mb-3">
         <h2 className="text-lg font-bold text-white">학습 메모</h2>
       </div>
 
-      {/* Bordered Memo Area */}
       <div className="px-5 flex-1 min-h-0">
         <div className="h-full rounded-xl border border-[#595959]/50 p-5 overflow-auto">
           <textarea
@@ -300,7 +285,6 @@ function EditPanel({
         </div>
       </div>
 
-      {/* Bottom Action Button */}
       <div className="p-5">
         <button className="w-full h-[68px] rounded-xl bg-[#1E40AF] hover:bg-[#1E3A8A] active:bg-[#1e3580] text-white font-medium transition-colors flex items-center justify-center">
           학습하기 퀴즈 PDF 생성하기

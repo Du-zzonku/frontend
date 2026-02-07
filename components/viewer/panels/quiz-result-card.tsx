@@ -3,7 +3,7 @@
 import { CheckCircle2, XCircle } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import type { Quiz, QuizResultItem } from '@/types/model';
+import type { Quiz, QuizResultItem } from '@/types/api';
 
 interface QuizResultCardProps {
   index: number;

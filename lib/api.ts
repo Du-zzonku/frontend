@@ -5,7 +5,7 @@ import type {
   Quiz,
   QuizAnswerItem,
   QuizResultResponse,
-} from '@/types/model';
+} from '@/types/api';
 
 export type { ModelSummary };
 

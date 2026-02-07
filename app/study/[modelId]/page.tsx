@@ -15,7 +15,7 @@ import { StudyRightPanel } from '@/components/viewer/study-right-panel';
 import { fetchViewerData } from '@/lib/api';
 import { getSystemPrompt } from '@/lib/constants/system-prompts';
 import { toViewerModel } from '@/lib/transform';
-import type { Model } from '@/lib/types';
+import type { ViewerModel } from '@/types/viewer';
 import { useViewerStore } from '@/store/viewer-store';
 
 const COMING_SOON_IDS: Record<string, string> = {
@@ -63,7 +63,7 @@ export default function StudyPage({ params }: PageProps) {
 }
 
 function ViewerPage({ modelId }: { modelId: string }) {
-  const [model, setModel] = useState<Model | null>(null);
+  const [model, setModel] = useState<ViewerModel | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
 

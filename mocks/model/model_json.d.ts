@@ -1,4 +1,4 @@
-import type { ModelData } from '@/types/model';
+import type { ModelData } from '@/types/api';
 
 declare module '*/suspension.json' {
   const data: ModelData;

@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { Send } from 'lucide-react';
 
-import type { ModelPart } from '@/lib/types';
+import type { ModelPart } from '@/types/viewer';
 import { cn } from '@/lib/utils';
 
 interface AIChatPanelProps {

@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import { Box, ChevronRight } from 'lucide-react';
 
-import type { ModelSummary } from '@/types/model';
+import type { ModelSummary } from '@/types/api';
 
 /** modelId를 사람이 읽기 좋은 형태로 변환 (예: "v4_engine" -> "V4 Engine") */
 function formatModelId(modelId: string): string {

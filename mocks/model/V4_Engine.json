@@ -10,14 +10,14 @@
     {
       "partId": "CONNECTING_ROD",
       "displayNameKo": "커넥팅 로드",
-      "glbUrl": "/models/V4_Engine/Connecting Rod.glb",
+      "glbUrl": "/models/V4_Engine/Connecting_Rod.glb",
       "summary": "피스톤과 크랭크샤프트를 연결",
       "materialType": "METAL_STEEL_MACHINED"
     },
     {
       "partId": "CONNECTING_ROD_CAP",
       "displayNameKo": "로드 캡",
-      "glbUrl": "/models/V4_Engine/Connecting Rod Cap.glb",
+      "glbUrl": "/models/V4_Engine/Connecting_Rod_Cap.glb",
       "summary": "로드를 고정하는 하단 캡",
       "materialType": "METAL_STEEL_BRUSHED"
     },

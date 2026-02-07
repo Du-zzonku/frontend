@@ -3,7 +3,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import type { CameraState, ChatMessage } from '@/lib/types';
+import type { CameraState, ChatMessage } from '@/types/viewer';
 
 export type { CameraState };
 

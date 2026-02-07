@@ -5,7 +5,7 @@ import { Suspense } from 'react';
 import { ContactShadows, Environment } from '@react-three/drei';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
 
-import type { CameraState, Model } from '@/lib/types';
+import type { CameraState, ViewerModel } from '@/types/viewer';
 
 import { FloorGrid } from './floor-grid';
 import { type ControlsHandle, ManualControls } from './manual-controls';
@@ -21,7 +21,7 @@ function LoadingFallback() {
 }
 
 interface CanvasContentProps {
-  model: Model;
+  model: ViewerModel;
   explodeValue: number;
   selectedPartId: string | null;
   onPartClick: (partId: string | null) => void;

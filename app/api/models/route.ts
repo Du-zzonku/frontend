@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import type { ModelSliceResponse } from '@/types/model';
+import type { ModelSliceResponse } from '@/types/api';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 

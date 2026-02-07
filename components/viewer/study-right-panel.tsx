@@ -4,14 +4,14 @@ import { useEffect, useRef } from 'react';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-import type { Model } from '@/lib/types';
+import type { ViewerModel } from '@/types/viewer';
 import { cn } from '@/lib/utils';
 
 import { PartDescription } from './part-description';
 import { PartThumbnail } from './part-thumbnail';
 
 interface StudyRightPanelProps {
-  model: Model;
+  model: ViewerModel;
   selectedPartId: string | null;
   onPartSelect: (partId: string | null) => void;
 }

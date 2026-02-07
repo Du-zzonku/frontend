@@ -1,5 +1,7 @@
-export type { Vector3, Quaternion } from '@/types/model';
-import type { Vector3, Quaternion, MaterialType } from '@/types/model';
+import type { Vector3, Quaternion } from '@/types/api/geometry';
+import type { MaterialType } from '@/types/api/model';
+
+export type { Vector3, Quaternion };
 
 /** 부품 인스턴스 (노드) - 같은 부품이 여러 위치에 배치될 수 있음 */
 export interface PartInstance {
@@ -28,7 +30,7 @@ export interface ModelPart {
   summary?: string;
 }
 
-export interface Model {
+export interface ViewerModel {
   id: string;
   name: string;
   nameKo: string;
@@ -42,15 +44,6 @@ export interface CameraState {
   position: [number, number, number];
   target: [number, number, number];
   zoom: number;
-}
-
-export interface ViewerState {
-  modelId: string;
-  camera: CameraState;
-  explodeValue: number;
-  selectedPartId: string | null;
-  notes: string;
-  aiHistory: ChatMessage[];
 }
 
 export interface ChatMessage {

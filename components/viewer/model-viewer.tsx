@@ -4,7 +4,7 @@ import { useMemo, useRef } from 'react';
 
 import type * as THREE from 'three';
 
-import type { Model, Quaternion, Vector3 } from '@/lib/types';
+import type { ViewerModel, Quaternion, Vector3 } from '@/types/viewer';
 
 import { PartMesh } from './part-mesh';
 
@@ -29,7 +29,7 @@ interface InstancedPart {
 }
 
 interface ModelViewerProps {
-  model: Model;
+  model: ViewerModel;
   explodeValue: number;
   selectedPartId: string | null;
   onPartClick: (partId: string | null) => void;

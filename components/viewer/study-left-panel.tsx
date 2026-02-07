@@ -9,7 +9,7 @@ import {
   RobotIcon,
   SettingsIcon,
 } from '@/components/icons/sidebar-icons';
-import type { Model, ModelPart } from '@/lib/types';
+import type { ViewerModel, ModelPart } from '@/types/viewer';
 import { cn } from '@/lib/utils';
 
 import { AIChatPanel } from './panels/ai-chat-panel';
@@ -28,7 +28,7 @@ const sidebarTopIcons: {
 ];
 
 interface StudyLeftPanelProps {
-  model: Model;
+  model: ViewerModel;
   modelId: string;
   notes: string;
   onNotesChange: (notes: string) => void;

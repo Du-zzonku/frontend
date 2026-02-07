@@ -6,7 +6,7 @@ import { Canvas } from '@react-three/fiber';
 
 import * as THREE from 'three';
 
-import type { CameraState, Model } from '@/lib/types';
+import type { CameraState, ViewerModel } from '@/types/viewer';
 import { useViewerStore } from '@/store/viewer-store';
 
 import { CanvasContent } from './canvas-content';
@@ -14,7 +14,7 @@ import type { ControlsHandle } from './manual-controls';
 import { BottomSliders, RotationControls } from './scene-controls';
 
 interface SceneProps {
-  model: Model;
+  model: ViewerModel;
   explodeValue: number;
   selectedPartId: string | null;
   onPartClick: (partId: string | null) => void;

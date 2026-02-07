@@ -7,7 +7,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 
 import * as THREE from 'three';
 
-import type { ModelPart } from '@/lib/types';
+import type { ModelPart } from '@/types/viewer';
 
 interface ThumbnailModelProps {
   glbPath: string;

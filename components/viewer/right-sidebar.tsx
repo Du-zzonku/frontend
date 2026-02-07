@@ -5,11 +5,11 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Bot, Loader2, Send, StickyNote, Trash2 } from 'lucide-react';
 
-import type { ChatMessage, Model, ModelPart } from '@/lib/types';
+import type { ChatMessage, ViewerModel, ModelPart } from '@/types/viewer';
 import { cn } from '@/lib/utils';
 
 interface RightSidebarProps {
-  model: Model;
+  model: ViewerModel;
   selectedPart: ModelPart | null;
   notes: string;
   onNotesChange: (notes: string) => void;

@@ -1,6 +1,6 @@
-import type { Model } from './types';
+import type { ViewerModel } from '@/types/viewer';
 
-export const models: Model[] = [
+export const models: ViewerModel[] = [
   {
     id: 'v4-engine',
     name: 'V4 Engine',
@@ -792,6 +792,6 @@ V4 엔진은 4개의 실린더가 V자 형태로 배치된 내연기관입니다
   },
 ];
 
-export function getModelById(id: string): Model | undefined {
+export function getModelById(id: string): ViewerModel | undefined {
   return models.find((m) => m.id === id);
 }

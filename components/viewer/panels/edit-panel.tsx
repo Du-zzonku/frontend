@@ -6,10 +6,10 @@ import { useRouter } from 'next/navigation';
 
 import { ChevronLeft, X } from 'lucide-react';
 
-import type { Model } from '@/lib/types';
+import type { ViewerModel } from '@/types/viewer';
 
 interface EditPanelProps {
-  model: Model;
+  model: ViewerModel;
   notes: string;
   onNotesChange: (notes: string) => void;
 }

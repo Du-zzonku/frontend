@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { getMaterialLabel, toTitleCase } from '@/lib/constants/materials';
-import type { ModelPart } from '@/lib/types';
+import type { ModelPart } from '@/types/viewer';
 
 interface PartDescriptionProps {
   part: ModelPart;

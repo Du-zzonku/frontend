@@ -22,7 +22,7 @@ import {
   isUninitializedCameraState,
   zoomPercentToDistance,
 } from '@/lib/camera-utils';
-import type { CameraState } from '@/lib/types';
+import type { CameraState } from '@/types/viewer';
 
 export interface ControlsHandle {
   zoomIn: () => void;

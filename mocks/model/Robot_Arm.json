@@ -2,63 +2,63 @@
   "model": {
     "modelId": "robot_arm",
     "title": "로봇 암 (Robot Arm)",
-    "thumbnailUrl": "/models/Robot Arm/로보팔 조립도.png",
+    "thumbnailUrl": "/models/Robot_Arm/로보팔_조립도.png",
     "overview": "블렌더(Blender)에서 스크립트로 자동 추출한 로봇 암(Robot Arm) 어셈블리 데이터입니다.",
     "theory": "로봇 암은 여러 개의 링크(link)와 관절(joint)로 구성된 직렬(Serial) 매니퓰레이터 구조로, 각 관절의 회전/이동을 조합해 말단(end-effector)을 원하는 위치와 자세로 제어합니다."
   },
   "parts": [
     {
       "partId": "base",
-      "glbUrl": "/models/Robot Arm/base.glb",
+      "glbUrl": "/models/Robot_Arm/base.glb",
       "displayNameKo": "베이스",
       "summary": "로봇 암 전체를 지지하는 베이스 부품으로, 설치면에 고정됩니다.",
       "materialType": "METAL_CAST_ROUGH"
     },
     {
       "partId": "Part2",
-      "glbUrl": "/models/Robot Arm/Part2.glb",
+      "glbUrl": "/models/Robot_Arm/Part2.glb",
       "displayNameKo": "1축 관절",
       "summary": "베이스 상단의 링크로, 로봇 암의 초기 자세를 형성합니다.",
       "materialType": "METAL_STEEL_BRUSHED"
     },
     {
       "partId": "Part3",
-      "glbUrl": "/models/Robot Arm/Part3.glb",
+      "glbUrl": "/models/Robot_Arm/Part3.glb",
       "displayNameKo": "2축 관절",
       "summary": "하부 링크로, 베이스에서 상부 링크로 힘과 자세를 전달합니다.",
       "materialType": "METAL_STEEL_BRUSHED"
     },
     {
       "partId": "Part4",
-      "glbUrl": "/models/Robot Arm/Part4.glb",
+      "glbUrl": "/models/Robot_Arm/Part4.glb",
       "displayNameKo": "상완",
       "summary": "팔의 상부 구간 링크로, 도달 범위에 영향을 줍니다.",
       "materialType": "METAL_ALUMINUM_MACHINED"
     },
     {
       "partId": "Part5",
-      "glbUrl": "/models/Robot Arm/Part5.glb",
+      "glbUrl": "/models/Robot_Arm/Part5.glb",
       "displayNameKo": "팔꿈치 관절",
       "summary": "중간 링크로, 상·하부 링크를 연결합니다.",
       "materialType": "METAL_STEEL_BRUSHED"
     },
     {
       "partId": "Part6",
-      "glbUrl": "/models/Robot Arm/Part6.glb",
+      "glbUrl": "/models/Robot_Arm/Part6.glb",
       "displayNameKo": "전완",
       "summary": "상부 링크 구간으로, 인접 관절과 함께 회전 자유도를 형성합니다.",
       "materialType": "METAL_ALUMINUM_MACHINED"
     },
     {
       "partId": "Part7",
-      "glbUrl": "/models/Robot Arm/Part7.glb",
+      "glbUrl": "/models/Robot_Arm/Part7.glb",
       "displayNameKo": "손목",
       "summary": "엔드이펙터 근처에서 자세 제어에 기여하는 말단부 파트입니다.",
       "materialType": "METAL_STEEL_MACHINED"
     },
     {
       "partId": "Part8",
-      "glbUrl": "/models/Robot Arm/Part8.glb",
+      "glbUrl": "/models/Robot_Arm/Part8.glb",
       "displayNameKo": "엔드이펙터",
       "summary": "그리퍼/툴 계열 부품으로, 복수 인스턴스로 배치됩니다.",
       "materialType": "METAL_STEEL_POLISHED"

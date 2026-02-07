@@ -2,14 +2,14 @@
 
 import { Box, Layers, Play, Wrench, X } from 'lucide-react';
 
-import type { Model, ModelPart } from '@/lib/types';
+import type { ViewerModel, ModelPart } from '@/types/viewer';
 import { cn } from '@/lib/utils';
 
 import { ExplodeSlider } from './explode-slider';
 import { PartThumbnail } from './part-thumbnail';
 
 interface LeftSidebarProps {
-  model: Model;
+  model: ViewerModel;
   selectedPartId: string | null;
   explodeValue: number;
   onExplodeChange: (value: number) => void;

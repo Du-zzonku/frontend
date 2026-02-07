@@ -16,7 +16,7 @@ import {
   BIOMEDICAL_MODELS,
   BIO_ENGINEERING_MODELS,
 } from '@/lib/constants/coming-soon-models';
-import type { ModelSummary } from '@/types/model';
+import type { ModelSummary } from '@/types/api';
 
 const navItems = [
   { label: 'Home', href: '/' },

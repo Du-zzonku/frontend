@@ -13,7 +13,7 @@ import { TargetAudienceSection } from '@/components/home/target-audience-section
 import { WhySimvexSection } from '@/components/home/why-simvex-section';
 import { ModelCard } from '@/components/model-card';
 import { fetchModels } from '@/lib/api';
-import type { ModelSummary } from '@/types/model';
+import type { ModelSummary } from '@/types/api';
 
 export default function HomePage() {
   const [models, setModels] = useState<ModelSummary[]>([]);

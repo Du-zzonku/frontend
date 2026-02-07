@@ -1,6 +1,6 @@
 import { HttpResponse, delay, http } from 'msw';
 
-import type { Model, ModelData, Node, Part } from '@/types/model';
+import type { ModelData, Node } from '@/types/api';
 
 import DroneData from './model/Dron.json';
 import LeafSpringData from './model/Leaf_Spring.json';
@@ -91,32 +91,6 @@ const mockDataMap: Record<string, ModelData> = {
   machine_vice: MachineViceData as ModelData,
 };
 
-// Model summary type for list endpoint
-interface ModelSummary {
-  modelId: string;
-  title: string;
-  thumbnailUrl: string;
-  overview: string;
-}
-
-// --- GLB URL 정규화 (공백 → 언더스코어) ---
-const MODEL_FOLDER_MAP: Record<string, string> = {
-  v4_engine: 'V4_Engine',
-  suspension: 'Suspension',
-  robot_gripper: 'Robot_Gripper',
-  drone: 'Drone',
-  robot_arm: 'Robot_Arm',
-  leaf_spring: 'Leaf_Spring',
-  machine_vice: 'Machine_Vice',
-};
-
-function normalizeGlbUrl(glbUrl: string, modelId: string): string {
-  if (!glbUrl || glbUrl.startsWith('http')) return glbUrl;
-  const folder = MODEL_FOLDER_MAP[modelId] || modelId;
-  const filename = glbUrl.split('/').pop()!.replace(/ /g, '_');
-  return `/models/${folder}/${filename}`;
-}
-
 // --- Mock 퀴즈 데이터 (모든 모델 공통) ---
 const mockQuizzes = [
   {
@@ -184,16 +158,7 @@ export const handlers = [
       return HttpResponse.json({ error: 'Model not found' }, { status: 404 });
     }
 
-    // glbUrl 정규화 (공백 → 언더스코어)
-    const normalized = {
-      ...data,
-      parts: data.parts.map((part: Part) => ({
-        ...part,
-        glbUrl: part.glbUrl ? normalizeGlbUrl(part.glbUrl, modelId) : part.glbUrl,
-      })),
-    };
-
-    return HttpResponse.json(normalized);
+    return HttpResponse.json(data);
   }),
 
   // GET /api/models/:id/quiz - 퀴즈 조회

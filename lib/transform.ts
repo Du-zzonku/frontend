@@ -1,13 +1,13 @@
-import type { Model, ModelPart, PartInstance } from '@/lib/types';
-import type { ModelData, Node, Part } from '@/types/model';
+import type { ViewerModel, ModelPart, PartInstance } from '@/types/viewer';
+import type { ModelData, Node, Part } from '@/types/api';
 
 /**
- * API에서 받은 ModelData를 기존 컴포넌트에서 사용하는 Model 형식으로 변환
+ * API에서 받은 ModelData를 기존 컴포넌트에서 사용하는 ViewerModel 형식으로 변환
  */
 export function toViewerModel(
   data: ModelData,
   systemPrompt: string = ''
-): Model {
+): ViewerModel {
   // parts를 ModelPart 형식으로 변환
   const partsMap = new Map<string, Part>();
   for (const part of data.parts) {
@@ -76,9 +76,9 @@ export function toViewerModel(
 }
 
 /**
- * 기존 Model 형식을 API ModelData 형식으로 변환 (역변환)
+ * 기존 ViewerModel 형식을 API ModelData 형식으로 변환 (역변환)
  */
-export function toApiModelData(model: Model): ModelData {
+export function toApiModelData(model: ViewerModel): ModelData {
   const parts: Part[] = model.parts.map((part) => ({
     partId: part.id,
     displayNameKo: part.nameKo,

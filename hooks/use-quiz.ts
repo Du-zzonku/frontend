@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { fetchQuiz, submitQuizAnswers } from '@/lib/api';
-import type { Quiz, QuizAnswerItem, QuizResultResponse } from '@/types/model';
+import type { Quiz, QuizAnswerItem, QuizResultResponse } from '@/types/api';
 
 export type QuizState =
   | 'idle'

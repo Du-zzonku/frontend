@@ -1,4 +1,4 @@
-import type { CameraState } from '@/lib/types';
+import type { CameraState } from '@/types/viewer';
 
 export const DEFAULT_MIN_DISTANCE = 0.3;
 export const DEFAULT_MAX_DISTANCE = 5;

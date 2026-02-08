@@ -2,7 +2,8 @@
 
 import { useCallback, useRef, useState } from 'react';
 
-import { Canvas } from '@react-three/fiber';
+import { Canvas, events as createPointerEvents } from '@react-three/fiber';
+import type { EventManager } from '@react-three/fiber';
 
 import { ACESFilmicToneMapping } from 'three';
 import type { WebGLRenderer } from 'three';
@@ -13,6 +14,22 @@ import type { CameraState, ViewerModel } from '@/types/viewer';
 import { CanvasContent } from './canvas-content';
 import type { ControlsHandle } from './manual-controls';
 import { BottomSliders, RotationControls } from './scene-controls';
+
+function createZoomSafeEvents(
+  store: Parameters<typeof createPointerEvents>[0]
+) {
+  const base = createPointerEvents(store) as EventManager<HTMLElement>;
+  return {
+    ...base,
+    compute(event: PointerEvent | MouseEvent | WheelEvent, state: any) {
+      const rect = state.gl.domElement.getBoundingClientRect();
+      const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      state.pointer.set(x, y);
+      state.raycaster.setFromCamera(state.pointer, state.camera);
+    },
+  };
+}
 
 interface SceneProps {
   model: ViewerModel;
@@ -137,6 +154,7 @@ export function Scene({
           <Canvas
             key={canvasKey}
             camera={{ position: [1, 0.5, 1], fov: 45 }}
+            events={createZoomSafeEvents}
             gl={{
               antialias: true,
               alpha: true,

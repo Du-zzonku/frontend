@@ -177,7 +177,7 @@ export function StudyRightPanel({
                   ref={(el) => {
                     if (el) partRefs.current.set(part.id, el);
                   }}
-                  onClick={() => onPartSelect(part.id)}
+                  onClick={() => onPartSelect(isSelected ? null : part.id)}
                   className="shrink-0 flex flex-col items-center gap-2"
                 >
                   <div
@@ -191,7 +191,7 @@ export function StudyRightPanel({
                     <PartThumbnail
                       part={part}
                       isSelected={isSelected}
-                      onClick={() => onPartSelect(part.id)}
+                      onClick={() => onPartSelect(isSelected ? null : part.id)}
                     />
                   </div>
                   <div className="flex justify-center items-center w-[83px] px-1 py-0.5">

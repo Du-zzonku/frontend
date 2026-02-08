@@ -1,9 +1,11 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 import { useGLTF } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import type { ThreeEvent } from '@react-three/fiber';
+
 import {
   Color,
   EdgesGeometry,
@@ -13,9 +15,13 @@ import {
   Quaternion as ThreeQuaternion,
 } from 'three';
 import type { Group, Material, MeshStandardMaterial } from 'three';
-import type { ModelPart, Quaternion, Vector3 } from '@/types/viewer';
-import type { MaterialType } from '@/types/api';
+
 import { MATERIAL_PRESET } from '@/lib/constants/material-preset';
+import type { MaterialType } from '@/types/api';
+import type { ModelPart, Quaternion, Vector3 } from '@/types/viewer';
+
+/** pointerdown 좌표와 pointerup 좌표의 거리가 이 값 이하이면 클릭으로 판정 */
+const CLICK_THRESHOLD_PX = 5;
 
 interface PartMeshProps {
   part: ModelPart;
@@ -69,28 +75,31 @@ export function PartMesh({
           const mesh = child;
 
           if (!originalMaterials.current.has(mesh.uuid)) {
-            const mat = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
+            const mat = Array.isArray(mesh.material)
+              ? mesh.material[0]
+              : mesh.material;
             originalMaterials.current.set(mesh.uuid, mat.clone());
           }
 
           if (isSelected) {
-     
-            const original = originalMaterials.current.get(mesh.uuid) as MeshStandardMaterial;
+            const original = originalMaterials.current.get(
+              mesh.uuid
+            ) as MeshStandardMaterial;
             const newMaterial = original.clone();
 
             const baseColor = materialType ? materialConfig.color : color;
             newMaterial.color = new Color(baseColor);
             newMaterial.metalness = materialConfig.metalness;
             newMaterial.roughness = materialConfig.roughness;
-            newMaterial.emissive.set("#3B82F6");
+            newMaterial.emissive.set('#3B82F6');
             newMaterial.emissiveIntensity = 1.2; // Bloom 강도
-            newMaterial.toneMapped = true; 
+            newMaterial.toneMapped = true;
 
             mesh.material = newMaterial;
-
           } else {
-  
-            const original = originalMaterials.current.get(mesh.uuid) as MeshStandardMaterial;
+            const original = originalMaterials.current.get(
+              mesh.uuid
+            ) as MeshStandardMaterial;
             const restoreMaterial = original.clone();
             const baseColor = materialType ? materialConfig.color : color;
             restoreMaterial.color = new Color(baseColor);
@@ -125,7 +134,7 @@ export function PartMesh({
               color: 0xffffff,
               linewidth: 1,
               transparent: true,
-              opacity: 0.3
+              opacity: 0.3,
             });
             const edges = new LineSegments(edgesGeometry, edgesMaterial);
             edges.userData.isEdgeLine = true;
@@ -193,16 +202,32 @@ export function PartMesh({
     document.body.style.cursor = 'auto';
   };
 
-  const handleClick = (e: ThreeEvent<MouseEvent>) => {
+  // onClick 대신 onPointerDown + DOM pointerup 조합으로 클릭 감지
+  // OrbitControls가 마우스 이벤트를 소비해 R3F의 onClick이 누락되는 문제 우회
+  const onClickRef = useRef(onClick);
+  onClickRef.current = onClick;
+
+  const handlePointerDown = useCallback((e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
-    onClick();
-  };
+    const startX = e.nativeEvent.clientX;
+    const startY = e.nativeEvent.clientY;
+
+    const handleUp = (upEvent: PointerEvent) => {
+      const dx = upEvent.clientX - startX;
+      const dy = upEvent.clientY - startY;
+      if (Math.sqrt(dx * dx + dy * dy) < CLICK_THRESHOLD_PX) {
+        onClickRef.current();
+      }
+    };
+
+    window.addEventListener('pointerup', handleUp, { once: true });
+  }, []);
 
   return (
     <group ref={groupRef}>
       <primitive
         object={clonedScene}
-        onClick={handleClick}
+        onPointerDown={handlePointerDown}
         onPointerOver={handlePointerOver}
         onPointerOut={handlePointerOut}
       />

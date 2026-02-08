@@ -10,7 +10,7 @@ export type { CameraState };
 
 export interface ViewerStoreState {
   modelId: string;
-  selectedPartId: string | null;
+  selectedPartIds: string[];
   explodeValue: number;
   cameraState: CameraState | null;
   notes: string;
@@ -19,7 +19,8 @@ export interface ViewerStoreState {
   isHydrated: boolean;
 
   setModelId: (modelId: string) => void;
-  setSelectedPartId: (partId: string | null) => void;
+  toggleSelectedPartId: (partId: string) => void;
+  clearSelectedPartIds: () => void;
   setExplodeValue: (value: number) => void;
   setCameraState: (state: CameraState) => void;
   setNotes: (notes: string) => void;
@@ -32,7 +33,7 @@ export interface ViewerStoreState {
 
 const getDefaultState = () => ({
   modelId: '',
-  selectedPartId: null,
+  selectedPartIds: [] as string[],
   explodeValue: 0,
   cameraState: null as CameraState | null,
   notes: '',
@@ -52,7 +53,17 @@ function createViewerStore(modelId: string) {
 
         setModelId: (modelId) => set({ modelId }),
 
-        setSelectedPartId: (partId) => set({ selectedPartId: partId }),
+        toggleSelectedPartId: (partId) =>
+          set((state) => {
+            const exists = state.selectedPartIds.includes(partId);
+            return {
+              selectedPartIds: exists
+                ? state.selectedPartIds.filter((id) => id !== partId)
+                : [...state.selectedPartIds, partId],
+            };
+          }),
+
+        clearSelectedPartIds: () => set({ selectedPartIds: [] }),
 
         setExplodeValue: (value) => set({ explodeValue: value }),
 
@@ -83,7 +94,7 @@ function createViewerStore(modelId: string) {
       {
         name: `simvex_viewer_${modelId}`,
         partialize: (state) => ({
-          selectedPartId: state.selectedPartId,
+          selectedPartIds: state.selectedPartIds,
           explodeValue: state.explodeValue,
           cameraState: state.cameraState,
           notes: state.notes,

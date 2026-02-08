@@ -17,20 +17,26 @@ import { PartThumbnail } from './part-thumbnail';
 
 interface StudyRightPanelProps {
   model: ViewerModel;
-  selectedPartId: string | null;
-  onPartSelect: (partId: string | null) => void;
+  selectedPartIds: string[];
+  onPartSelect: (partId: string) => void;
   isQuizActive?: boolean;
 }
 
 export function StudyRightPanel({
   model,
-  selectedPartId,
+  selectedPartIds,
   onPartSelect,
   isQuizActive = false,
 }: StudyRightPanelProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const partRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
-  const selectedPart = model.parts.find((p) => p.id === selectedPartId);
+  const lastSelectedPartId =
+    selectedPartIds.length > 0
+      ? selectedPartIds[selectedPartIds.length - 1]
+      : null;
+  const selectedPart = lastSelectedPartId
+    ? model.parts.find((p) => p.id === lastSelectedPartId)
+    : undefined;
 
   const [isOverviewOpen, setIsOverviewOpen] = useState(true);
   const [isPartDescOpen, setIsPartDescOpen] = useState(true);
@@ -62,8 +68,8 @@ export function StudyRightPanel({
   }, [handleOverviewScroll]);
 
   useEffect(() => {
-    if (selectedPartId && scrollContainerRef.current) {
-      const partElement = partRefs.current.get(selectedPartId);
+    if (lastSelectedPartId && scrollContainerRef.current) {
+      const partElement = partRefs.current.get(lastSelectedPartId);
       if (partElement) {
         const container = scrollContainerRef.current;
         const containerRect = container.getBoundingClientRect();
@@ -82,7 +88,7 @@ export function StudyRightPanel({
         });
       }
     }
-  }, [selectedPartId]);
+  }, [lastSelectedPartId]);
 
   const scrollLeft = () => {
     scrollContainerRef.current?.scrollBy({ left: -120, behavior: 'smooth' });
@@ -190,14 +196,14 @@ export function StudyRightPanel({
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {model.parts.map((part) => {
-              const isSelected = selectedPartId === part.id;
+              const isSelected = selectedPartIds.includes(part.id);
               return (
                 <button
                   key={part.id}
                   ref={(el) => {
                     if (el) partRefs.current.set(part.id, el);
                   }}
-                  onClick={() => onPartSelect(isSelected ? null : part.id)}
+                  onClick={() => onPartSelect(part.id)}
                   className="shrink-0 flex flex-col items-center gap-2"
                 >
                   <div
@@ -211,7 +217,7 @@ export function StudyRightPanel({
                     <PartThumbnail
                       part={part}
                       isSelected={isSelected}
-                      onClick={() => onPartSelect(isSelected ? null : part.id)}
+                      onClick={() => {}}
                     />
                   </div>
                   <div className="flex justify-center items-center w-[72px] px-1 py-0.5">

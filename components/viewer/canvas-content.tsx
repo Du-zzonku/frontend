@@ -23,8 +23,8 @@ function LoadingFallback() {
 interface CanvasContentProps {
   model: ViewerModel;
   explodeValue: number;
-  selectedPartId: string | null;
-  onPartClick: (partId: string | null) => void;
+  selectedPartIds: string[];
+  onPartClick: (partId: string) => void;
   onPartHover: (partId: string | null) => void;
   controlsRef: React.RefObject<ControlsHandle | null>;
   initialCameraState: CameraState | null;
@@ -35,7 +35,7 @@ interface CanvasContentProps {
 export function CanvasContent({
   model,
   explodeValue,
-  selectedPartId,
+  selectedPartIds,
   onPartClick,
   onPartHover,
   controlsRef,
@@ -75,7 +75,7 @@ export function CanvasContent({
         <ModelViewer
           model={model}
           explodeValue={explodeValue}
-          selectedPartId={selectedPartId}
+          selectedPartIds={selectedPartIds}
           onPartClick={onPartClick}
           onPartHover={onPartHover}
         />

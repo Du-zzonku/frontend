@@ -18,6 +18,21 @@ function getNodeExplodeProgress(
   if (sliderValue >= start + duration) return 1;
   return (sliderValue - start) / duration;
 }
+function easeOutCubic(x: number): number {
+  return 1 - Math.pow(1 - x, 3);
+}
+
+function easeOutBack(x: number): number {
+  const c1 = 1.70158;
+  const c3 = c1 + 1;
+  return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+}
+
+function easeInOutCubic(x: number): number {
+  return x < 0.5 
+    ? 4 * x * x * x 
+    : 1 - Math.pow(-2 * x + 2, 3) / 2;
+}
 
 type RotationData = [number, number, number] | [number, number, number, number] | undefined;
 
@@ -120,12 +135,12 @@ export function ModelViewer({
       const data = obj.userData as StaticPartData['animData'] & { basePosition: number[] };
       if (!data) return;
 
-      const progress = getNodeExplodeProgress(currentProgress, data.start, data.duration);
-
+      const rawProgress = getNodeExplodeProgress(currentProgress, data.start, data.duration);
+      const easedProgress = easeInOutCubic(rawProgress);
       obj.position.set(
-        data.basePosition[0] + data.explodeDir[0] * data.explodeDistance * progress,
-        data.basePosition[1] + data.explodeDir[1] * data.explodeDistance * progress,
-        data.basePosition[2] + data.explodeDir[2] * data.explodeDistance * progress
+        data.basePosition[0] + data.explodeDir[0] * data.explodeDistance * easedProgress,
+        data.basePosition[1] + data.explodeDir[1] * data.explodeDistance * easedProgress,
+        data.basePosition[2] + data.explodeDir[2] * data.explodeDistance * easedProgress
       );
     });
   });

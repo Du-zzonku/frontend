@@ -13,13 +13,13 @@ interface AIChatPanelProps {
   modelId: string;
   modelTitle: string;
   systemPrompt: string;
-  selectedPart: ModelPart | null;
+  selectedParts: ModelPart[];
 }
 
 export function AIChatPanel({
   modelId,
   modelTitle,
-  selectedPart,
+  selectedParts,
 }: AIChatPanelProps) {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -52,7 +52,7 @@ export function AIChatPanel({
           message,
           history,
           model: { modelId, title: modelTitle },
-          parts: selectedPart ? [{ partId: selectedPart.id }] : [],
+          parts: selectedParts.map((p) => ({ partId: p.id })),
         });
         addChatMessage({ role: 'assistant', content: response.answer });
       } catch {
@@ -65,7 +65,7 @@ export function AIChatPanel({
         setIsLoading(false);
       }
     },
-    [modelId, modelTitle, selectedPart, isLoading, aiHistory, addChatMessage]
+    [modelId, modelTitle, selectedParts, isLoading, aiHistory, addChatMessage]
   );
 
   const handleSubmit = (e?: React.FormEvent) => {
@@ -78,10 +78,10 @@ export function AIChatPanel({
 
   return (
     <div className="flex flex-col h-full px-5 pb-5">
-      {selectedPart && (
+      {selectedParts.length > 0 && (
         <div className="mb-3 px-3 py-2 rounded-lg bg-[#60A5FA]/10 border border-[#60A5FA]/20 shrink-0">
           <p className="text-xs text-[#60A5FA]">
-            현재 선택된 부품: {selectedPart.nameKo}
+            현재 선택된 부품: {selectedParts.map((p) => p.nameKo).join(', ')}
           </p>
         </div>
       )}

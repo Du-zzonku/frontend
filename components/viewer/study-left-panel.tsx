@@ -47,7 +47,7 @@ interface StudyLeftPanelProps {
   modelId: string;
   notes: string;
   onNotesChange: (notes: string) => void;
-  selectedPart: ModelPart | null;
+  selectedParts: ModelPart[];
   onPanelToggle?: (isOpen: boolean) => void;
   onQuizActiveChange?: (isActive: boolean) => void;
 }
@@ -57,7 +57,7 @@ export function StudyLeftPanel({
   modelId,
   notes,
   onNotesChange,
-  selectedPart,
+  selectedParts,
   onPanelToggle,
   onQuizActiveChange,
 }: StudyLeftPanelProps) {
@@ -185,7 +185,7 @@ export function StudyLeftPanel({
                 modelId={modelId}
                 modelTitle={model.nameKo}
                 systemPrompt={model.systemPrompt}
-                selectedPart={selectedPart}
+                selectedParts={selectedParts}
               />
             )}
             {activeTab === 'quiz' && (

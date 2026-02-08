@@ -85,11 +85,11 @@ function ViewerPage({ modelId }: { modelId: string }) {
   }, [modelId]);
 
   const store = useViewerStore(modelId);
-  const selectedPartId = store((state) => state.selectedPartId);
+  const selectedPartIds = store((state) => state.selectedPartIds);
   const explodeValue = store((state) => state.explodeValue);
   const notes = store((state) => state.notes);
   const isHydrated = store((state) => state.isHydrated);
-  const setSelectedPartId = store((state) => state.setSelectedPartId);
+  const toggleSelectedPartId = store((state) => state.toggleSelectedPartId);
   const setExplodeValue = store((state) => state.setExplodeValue);
   const setNotes = store((state) => state.setNotes);
 
@@ -168,8 +168,8 @@ function ViewerPage({ modelId }: { modelId: string }) {
           <Scene
             model={model}
             explodeValue={explodeValue}
-            selectedPartId={selectedPartId}
-            onPartClick={setSelectedPartId}
+            selectedPartIds={selectedPartIds}
+            onPartClick={toggleSelectedPartId}
             onPartHover={setHoveredPartId}
             onExplodeChange={setExplodeValue}
             isFullscreen={isFullscreen}
@@ -208,11 +208,9 @@ function ViewerPage({ modelId }: { modelId: string }) {
           onNotesChange={setNotes}
           onPanelToggle={setIsLeftPanelOpen}
           onQuizActiveChange={setIsQuizActive}
-          selectedPart={
-            selectedPartId
-              ? (model.parts.find((p) => p.id === selectedPartId) ?? null)
-              : null
-          }
+          selectedParts={model.parts.filter((p) =>
+            selectedPartIds.includes(p.id)
+          )}
         />
       </div>
 
@@ -225,13 +223,13 @@ function ViewerPage({ modelId }: { modelId: string }) {
       >
         <StudyRightPanel
           model={model}
-          selectedPartId={selectedPartId}
-          onPartSelect={setSelectedPartId}
+          selectedPartIds={selectedPartIds}
+          onPartSelect={toggleSelectedPartId}
           isQuizActive={isQuizActive}
         />
       </div>
 
-      {hoveredPartId && !selectedPartId && !isFullscreen && (
+      {hoveredPartId && selectedPartIds.length === 0 && !isFullscreen && (
         <PartTooltip part={model.parts.find((p) => p.id === hoveredPartId)!} />
       )}
     </div>

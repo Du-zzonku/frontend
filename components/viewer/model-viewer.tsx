@@ -31,15 +31,15 @@ interface InstancedPart {
 interface ModelViewerProps {
   model: ViewerModel;
   explodeValue: number;
-  selectedPartId: string | null;
-  onPartClick: (partId: string | null) => void;
+  selectedPartIds: string[];
+  onPartClick: (partId: string) => void;
   onPartHover: (partId: string | null) => void;
 }
 
 export function ModelViewer({
   model,
   explodeValue,
-  selectedPartId,
+  selectedPartIds,
   onPartClick,
   onPartHover,
 }: ModelViewerProps) {
@@ -117,7 +117,7 @@ export function ModelViewer({
     <group ref={groupRef} name="model-root">
       {instancedParts.map((inst) => {
         const part = model.parts.find((p) => p.id === inst.partId)!;
-        const isSelected = selectedPartId === inst.partId;
+        const isSelected = selectedPartIds.includes(inst.partId);
 
         return (
           <PartMesh
@@ -130,7 +130,7 @@ export function ModelViewer({
             color={partColors[inst.partId]}
             materialType={part.materialType}
             isSelected={isSelected}
-            onClick={() => onPartClick(isSelected ? null : inst.partId)}
+            onClick={() => onPartClick(inst.partId)}
             onPointerOver={() => onPartHover(inst.partId)}
             onPointerOut={() => onPartHover(null)}
           />

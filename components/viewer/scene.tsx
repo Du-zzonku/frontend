@@ -34,8 +34,8 @@ function createZoomSafeEvents(
 interface SceneProps {
   model: ViewerModel;
   explodeValue: number;
-  selectedPartId: string | null;
-  onPartClick: (partId: string | null) => void;
+  selectedPartIds: string[];
+  onPartClick: (partId: string) => void;
   onPartHover: (partId: string | null) => void;
   onExplodeChange: (value: number) => void;
   isFullscreen?: boolean;
@@ -46,7 +46,7 @@ interface SceneProps {
 export function Scene({
   model,
   explodeValue,
-  selectedPartId,
+  selectedPartIds,
   onPartClick,
   onPartHover,
   onExplodeChange,
@@ -175,7 +175,7 @@ export function Scene({
             <CanvasContent
               model={model}
               explodeValue={explodeValue}
-              selectedPartId={selectedPartId}
+              selectedPartIds={selectedPartIds}
               onPartClick={onPartClick}
               onPartHover={onPartHover}
               controlsRef={controlsRef}

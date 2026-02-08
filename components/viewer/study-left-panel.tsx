@@ -64,7 +64,14 @@ export function StudyLeftPanel({
 
   return (
     <aside className="h-full relative flex shrink-0">
-      <div className="w-[168px] h-full shrink-0 flex flex-col justify-between rounded-[20px] border border-[#595959]/30 bg-[#080d1a]/20 backdrop-blur-md z-20">
+      <div
+        className="w-[168px] h-full shrink-0 flex flex-col justify-between rounded-[20px] z-20"
+        style={{
+          background: 'rgba(8, 13, 26, 0.35)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+        }}
+      >
         <div className="flex flex-col items-center gap-[24px] pt-6">
           {sidebarTopItems.map((item) => {
             const isActive = activeTab === item.id;
@@ -128,13 +135,14 @@ export function StudyLeftPanel({
           'absolute left-[176px] top-0 bottom-0 w-[394px] flex flex-col overflow-hidden z-10',
           'transition-[transform,opacity] duration-300 ease-in-out',
           activeTab !== null
-            ? 'translate-x-0 opacity-100 rounded-[20px] border border-[#595959]/50'
-            : '-translate-x-full opacity-0 pointer-events-none border-0'
+            ? 'translate-x-0 opacity-100 rounded-[20px]'
+            : '-translate-x-full opacity-0 pointer-events-none'
         )}
         style={{
           background:
-            'linear-gradient(180deg, rgba(7, 11, 20, 0.2) 0%, rgba(4, 10, 46, 0.16) 100%)',
-          backdropFilter: 'blur(12px)',
+            'linear-gradient(180deg, rgba(7, 11, 20, 0.35) 0%, rgba(4, 10, 46, 0.3) 100%)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
         }}
       >
         <div className="w-[394px] h-full flex flex-col">

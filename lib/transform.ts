@@ -1,20 +1,32 @@
 import type { ModelData, Node, Part } from '@/types/api';
 import type { ModelPart, PartInstance, ViewerModel } from '@/types/viewer';
 
-/**
- * API에서 받은 ModelData를 기존 컴포넌트에서 사용하는 ViewerModel 형식으로 변환
- */
+function normalizeGlbPath(glbUrl: string, modelId: string): string {
+  let path = glbUrl;
+
+  if (path.startsWith('/glb/')) {
+    const fileName = path.slice('/glb/'.length);
+    const folderName = modelId
+      .split('_')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join('_');
+    path = `/models/${folderName}/${fileName}`;
+  }
+
+  path = path.replace(/%20/g, '_').replace(/ /g, '_');
+
+  return path;
+}
+
 export function toViewerModel(
   data: ModelData,
   systemPrompt: string = ''
 ): ViewerModel {
-  // parts를 ModelPart 형식으로 변환
   const partsMap = new Map<string, Part>();
   for (const part of data.parts) {
     partsMap.set(part.partId, part);
   }
 
-  // 각 partId별로 노드들을 그룹화
   const nodesByPartId = new Map<string, Node[]>();
   for (const node of data.nodes) {
     const nodes = nodesByPartId.get(node.partId) || [];
@@ -22,12 +34,8 @@ export function toViewerModel(
     nodesByPartId.set(node.partId, nodes);
   }
 
-  // ModelPart 배열 생성
   const parts: ModelPart[] = data.parts.map((part) => {
     const nodes = nodesByPartId.get(part.partId) || [];
-
-    // 노드들을 인스턴스로 변환
-    // scale 0.01은 Blender 내보내기 설정이므로 무시하고 1로 사용
     const instances: PartInstance[] = nodes.map((node) => ({
       nodeId: node.nodeId,
       position: node.assembled.pos,
@@ -48,10 +56,9 @@ export function toViewerModel(
       nameKo: part.displayNameKo,
       role: part.summary,
       material: '기본 재질', // API에서 제공하지 않으므로 기본값
-      glbPath: part.glbUrl,
+      glbPath: normalizeGlbPath(part.glbUrl, data.model.modelId),
       materialType: part.materialType, // Material Preset 적용
       instances: instances.length > 0 ? instances : undefined,
-      // 단일 인스턴스용 기본값
       basePosition: instances[0]?.position,
       explodeOffset: instances[0]
         ? ([
@@ -75,9 +82,6 @@ export function toViewerModel(
   };
 }
 
-/**
- * 기존 ViewerModel 형식을 API ModelData 형식으로 변환 (역변환)
- */
 export function toApiModelData(model: ViewerModel): ModelData {
   const parts: Part[] = model.parts.map((part) => ({
     partId: part.id,

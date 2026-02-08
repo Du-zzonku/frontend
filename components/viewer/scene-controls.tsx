@@ -82,11 +82,12 @@ interface SliderCardProps {
 function SliderCard({ title, value, onChange }: SliderCardProps) {
   return (
     <div
-      className="w-[360px] h-[126px] rounded-[20px] border border-[#595959]/50 px-[22px] pt-[18px] pb-[20px] flex flex-col justify-between"
+      className="w-[360px] h-[126px] rounded-[20px] px-[22px] pt-[18px] pb-[20px] flex flex-col justify-between"
       style={{
         background:
-          'linear-gradient(180deg, rgba(7, 11, 20, 0.2) 0%, rgba(4, 10, 46, 0.16) 100%)',
-        backdropFilter: 'blur(8px)',
+          'linear-gradient(180deg, rgba(7, 11, 20, 0.35) 0%, rgba(4, 10, 46, 0.3) 100%)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
       }}
     >
       <div>

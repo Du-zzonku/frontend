@@ -93,8 +93,7 @@ export function StudyRightPanel({
       className="h-full flex flex-col p-5 gap-4"
       style={{
         background:
-          'linear-gradient(180deg, rgba(7, 11, 20, 0.2) 0%, rgba(4, 10, 46, 0.16) 100%)',
-        border: '0.5px solid #595959',
+          'linear-gradient(180deg, rgba(7, 11, 20, 0.35) 0%, rgba(4, 10, 46, 0.3) 100%)',
         borderRadius: '20px',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',

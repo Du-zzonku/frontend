@@ -107,19 +107,40 @@ export async function fetchViewerData(modelId: string): Promise<ModelData> {
   return response.json();
 }
 
-export interface ChatResponse {
+export interface HistoryMessage {
+  role: string;
   content: string;
+}
+
+export interface ChatCitation {
+  tag?: string;
+  documentId?: string;
+  documentTitle?: string;
+  pages?: string;
+  chunkId?: string;
+  distance?: number;
+}
+
+export interface ChatResponse {
+  answer: string;
+  citations?: ChatCitation[];
 }
 
 export async function sendChatMessage(
   modelId: string,
   message: string,
-  history: string[]
+  history: HistoryMessage[]
 ): Promise<string> {
-  const response = await fetch(`/api/models/${modelId}/chat`, {
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+
+  const response = await fetch(`${API_BASE_URL}/v1/chat/messages`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, history }),
+    body: JSON.stringify({
+      message,
+      history,
+      extraMetadata: { modelId },
+    }),
   });
 
   if (!response.ok) {
@@ -127,7 +148,7 @@ export async function sendChatMessage(
   }
 
   const data: ChatResponse = await response.json();
-  return data.content;
+  return data.answer;
 }
 
 export async function saveNodes(

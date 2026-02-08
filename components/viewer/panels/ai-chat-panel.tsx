@@ -35,7 +35,10 @@ export function AIChatPanel({ modelId, selectedPart }: AIChatPanelProps) {
 
       addChatMessage({ role: 'user', content: message });
 
-      const history = aiHistory.map((msg) => `${msg.role}: ${msg.content}`);
+      const history = aiHistory.map((msg) => ({
+        role: msg.role,
+        content: msg.content,
+      }));
 
       setIsLoading(true);
       try {

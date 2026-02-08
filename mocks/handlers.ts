@@ -210,25 +210,21 @@ export const handlers = [
     return HttpResponse.json({ results });
   }),
 
-  // POST /api/models/:id/chat - AI 질의
-  http.post('/api/models/:id/chat', async ({ params, request }) => {
+  // POST /v1/chat/messages - AI 질의
+  http.post('*/v1/chat/messages', async ({ request }) => {
     // 0.4초 delay
     await delay(400);
 
-    const modelId = params.id as string;
     const body = (await request.json()) as {
       message: string;
-      history: string[];
+      history?: { role: string; content: string }[];
+      extraMetadata?: { modelId?: string };
     };
-
-    // 모델이 존재하지 않으면 404
-    if (!mockDataMap[modelId]) {
-      return HttpResponse.json({ error: 'Model not found' }, { status: 404 });
-    }
 
     // 단순 mock 응답
     return HttpResponse.json({
-      content: '[AI 답변내용]',
+      answer: `[Mock AI 답변] "${body.message}"에 대한 응답입니다.`,
+      citations: [],
     });
   }),
 

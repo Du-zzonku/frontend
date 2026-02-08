@@ -48,6 +48,7 @@ interface StudyLeftPanelProps {
   notes: string;
   onNotesChange: (notes: string) => void;
   selectedPart: ModelPart | null;
+  onPanelToggle?: (isOpen: boolean) => void;
 }
 
 export function StudyLeftPanel({
@@ -56,11 +57,16 @@ export function StudyLeftPanel({
   notes,
   onNotesChange,
   selectedPart,
+  onPanelToggle,
 }: StudyLeftPanelProps) {
   const [activeTab, setActiveTab] = useState<SidebarTab | null>('edit');
 
   const handleTabClick = (tabId: SidebarTab) => {
-    setActiveTab((prev) => (prev === tabId ? null : tabId));
+    setActiveTab((prev) => {
+      const next = prev === tabId ? null : tabId;
+      onPanelToggle?.(next !== null);
+      return next;
+    });
   };
 
   return (
@@ -275,7 +281,10 @@ function PDFViewerPanel() {
         PDF로 다운로드 할 항목을 선택해주세요.
       </p>
 
-      <div className="rounded-xl overflow-hidden" style={{ background: 'rgba(184, 184, 184, 0.1)' }}>
+      <div
+        className="rounded-xl overflow-hidden"
+        style={{ background: 'rgba(184, 184, 184, 0.1)' }}
+      >
         {pdfDownloadItems.map((item, index) => {
           const isSelected = selectedItems.has(item.id);
           return (
@@ -284,7 +293,8 @@ function PDFViewerPanel() {
               onClick={() => toggleItem(item.id)}
               className={cn(
                 'w-full flex items-center gap-3 px-5 py-3 transition-colors hover:bg-white/5',
-                index < pdfDownloadItems.length - 1 && 'border-b border-dashed border-[#FAFAFA]/20'
+                index < pdfDownloadItems.length - 1 &&
+                  'border-b border-dashed border-[#FAFAFA]/20'
               )}
             >
               <div className="w-10 h-10 rounded-[10px] bg-[#595959] flex items-center justify-center shrink-0">

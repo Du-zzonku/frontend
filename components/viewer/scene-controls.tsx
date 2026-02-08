@@ -30,7 +30,7 @@ export function RotationControls({
 }: RotationControlsProps) {
   return (
     <div
-      className="absolute flex items-center z-10"
+      className="absolute flex items-center z-10 transition-[top,right] duration-500 ease-in-out"
       style={{
         top: isFullscreen ? '20px' : '120px',
         right: isFullscreen ? '20px' : '418px',
@@ -128,11 +128,18 @@ function SliderCard({ title, value, onChange }: SliderCardProps) {
   );
 }
 
+// 좌측 패널 콘텐츠(394px + 8px gap) 열림 시 Canvas 컨테이너 내 중앙 보정값
+// 실제 보이는 영역 기준으로 중앙 정렬하기 위해 절반만큼 오른쪽으로 오프셋
+const LEFT_PANEL_CONTENT_WIDTH = 402; // 8px gap + 394px panel
+const SLIDER_OFFSET = LEFT_PANEL_CONTENT_WIDTH / 2; // 201px
+
 interface BottomSlidersProps {
   explodeValue: number;
   zoomValue: number;
   onExplodeChange: (value: number) => void;
   onZoomChange: (value: number) => void;
+  isFullscreen?: boolean;
+  isLeftPanelOpen?: boolean;
 }
 
 export function BottomSliders({
@@ -140,9 +147,20 @@ export function BottomSliders({
   zoomValue,
   onExplodeChange,
   onZoomChange,
+  isFullscreen = false,
+  isLeftPanelOpen = true,
 }: BottomSlidersProps) {
+  // 풀스크린이면 오프셋 없이 순수 중앙, 아니면 좌측 패널 상태에 따라 보정
+  const offsetPx = isFullscreen ? 0 : isLeftPanelOpen ? SLIDER_OFFSET : 0;
+
   return (
-    <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-10 flex gap-10">
+    <div
+      className="absolute bottom-5 z-10 flex gap-10 transition-[left] duration-300 ease-in-out"
+      style={{
+        left: `calc(50% + ${offsetPx}px)`,
+        transform: 'translateX(-50%)',
+      }}
+    >
       <SliderCard
         title="분해도 조절"
         value={explodeValue}

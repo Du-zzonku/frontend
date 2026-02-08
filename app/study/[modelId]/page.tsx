@@ -96,6 +96,7 @@ function ViewerPage({ modelId }: { modelId: string }) {
   const [hoveredPartId, setHoveredPartId] = useState<string | null>(null);
   const [isSceneReady, setIsSceneReady] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(true);
 
   const toggleFullscreen = useCallback(() => {
     setIsFullscreen((prev) => !prev);
@@ -171,6 +172,7 @@ function ViewerPage({ modelId }: { modelId: string }) {
             onPartHover={setHoveredPartId}
             onExplodeChange={setExplodeValue}
             isFullscreen={isFullscreen}
+            isLeftPanelOpen={isLeftPanelOpen}
             onToggleFullscreen={toggleFullscreen}
           />
         ) : (
@@ -183,40 +185,51 @@ function ViewerPage({ modelId }: { modelId: string }) {
         )}
       </div>
 
-      {!isFullscreen && (
-        <>
-          <div className="absolute top-0 left-0 right-0 z-20">
-            <StudyHeader />
-          </div>
+      <div
+        className={`absolute top-0 left-0 right-0 z-20 transition-opacity duration-500 ease-in-out ${
+          isFullscreen ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        }`}
+      >
+        <StudyHeader />
+      </div>
 
-          <div className="absolute top-[112px] left-3 bottom-3 z-10">
-            <StudyLeftPanel
-              model={model}
-              modelId={modelId}
-              notes={notes}
-              onNotesChange={setNotes}
-              selectedPart={
-                selectedPartId
-                  ? (model.parts.find((p) => p.id === selectedPartId) ?? null)
-                  : null
-              }
-            />
-          </div>
+      <div
+        className={`absolute top-[112px] left-3 bottom-3 z-10 transition-[opacity,transform] duration-500 ease-in-out ${
+          isFullscreen
+            ? 'opacity-0 pointer-events-none -translate-x-10'
+            : 'opacity-100 translate-x-0'
+        }`}
+      >
+        <StudyLeftPanel
+          model={model}
+          modelId={modelId}
+          notes={notes}
+          onNotesChange={setNotes}
+          onPanelToggle={setIsLeftPanelOpen}
+          selectedPart={
+            selectedPartId
+              ? (model.parts.find((p) => p.id === selectedPartId) ?? null)
+              : null
+          }
+        />
+      </div>
 
-          <div className="absolute top-[112px] right-3 bottom-3 w-[394px] z-10">
-            <StudyRightPanel
-              model={model}
-              selectedPartId={selectedPartId}
-              onPartSelect={setSelectedPartId}
-            />
-          </div>
+      <div
+        className={`absolute top-[112px] right-3 bottom-3 w-[394px] z-10 transition-[opacity,transform] duration-500 ease-in-out ${
+          isFullscreen
+            ? 'opacity-0 pointer-events-none translate-x-10'
+            : 'opacity-100 translate-x-0'
+        }`}
+      >
+        <StudyRightPanel
+          model={model}
+          selectedPartId={selectedPartId}
+          onPartSelect={setSelectedPartId}
+        />
+      </div>
 
-          {hoveredPartId && !selectedPartId && (
-            <PartTooltip
-              part={model.parts.find((p) => p.id === hoveredPartId)!}
-            />
-          )}
-        </>
+      {hoveredPartId && !selectedPartId && !isFullscreen && (
+        <PartTooltip part={model.parts.find((p) => p.id === hoveredPartId)!} />
       )}
     </div>
   );

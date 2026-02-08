@@ -44,6 +44,7 @@ interface SceneProps {
   onPartHover: (partId: string | null) => void;
   onExplodeChange: (value: number) => void;
   isFullscreen?: boolean;
+  isLeftPanelOpen?: boolean;
   onToggleFullscreen?: () => void;
 }
 
@@ -55,6 +56,7 @@ export function Scene({
   onPartHover,
   onExplodeChange,
   isFullscreen = false,
+  isLeftPanelOpen = true,
   onToggleFullscreen,
 }: SceneProps) {
   const controlsRef = useRef<ControlsHandle>(null);
@@ -150,7 +152,7 @@ export function Scene({
 
       {/* 3D Canvas — 비풀스크린 시 패널 사이 영역에 배치하여 자동 중앙 정렬 */}
       <div
-        className="absolute top-0 bottom-0"
+        className="absolute top-0 bottom-0 transition-[left,right] duration-500 ease-in-out"
         style={
           isFullscreen
             ? { left: 0, right: 0 }
@@ -196,12 +198,14 @@ export function Scene({
           </Canvas>
         )}
 
-        {/* 슬라이더 — Canvas 영역 기준 중앙 */}
+        {/* 슬라이더 — 실제 보이는 3D 영역 기준 중앙 */}
         <BottomSliders
           explodeValue={explodeValue}
           zoomValue={zoomValue}
           onExplodeChange={onExplodeChange}
           onZoomChange={handleZoomSliderChange}
+          isFullscreen={isFullscreen}
+          isLeftPanelOpen={isLeftPanelOpen}
         />
       </div>
 

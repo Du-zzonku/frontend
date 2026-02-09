@@ -15,7 +15,7 @@ export function FloorGrid() {
         uGridThickness: { value: 0.003 },
         uMainColor: { value: new Color('#0a3d6b') },
         uSubColor: { value: new Color('#071e35') },
-        uFadeRadius: { value: 4.0 },
+        uFadeRadius: { value: 20.0 },
         uOpacity: { value: 0.7 },
       },
       vertexShader: `
@@ -71,7 +71,7 @@ export function FloorGrid() {
 
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
-      <planeGeometry args={[12, 12, 1, 1]} />
+      <planeGeometry args={[50, 50, 1, 1]} />
       <primitive object={shaderMaterial} attach="material" />
     </mesh>
   );

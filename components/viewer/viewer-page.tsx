@@ -47,7 +47,7 @@ export function ViewerPage({ model, modelId }: ViewerPageProps) {
   const [hoveredPartId, setHoveredPartId] = useState<string | null>(null);
   const [isSceneReady, setIsSceneReady] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(true);
+  const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(false);
   const [isQuizActive, setIsQuizActive] = useState(false);
   const captureRef = useRef<(() => string | null) | null>(null);
 

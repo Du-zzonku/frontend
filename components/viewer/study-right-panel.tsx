@@ -124,16 +124,13 @@ export function StudyRightPanel({
       >
         <button
           onClick={() => !isQuizActive && setIsOverviewOpen((prev) => !prev)}
-          className={cn(
-            'flex items-center justify-between w-full shrink-0 transition-opacity duration-300',
-            isQuizActive && 'opacity-0 pointer-events-none h-0 overflow-hidden'
-          )}
+          className="flex items-center justify-between w-full shrink-0"
         >
           <h2 className="text-base font-bold text-[#FAFAFA]">완제품 설명</h2>
           <ChevronDownIcon
             className={cn(
               'w-6 h-6 text-[#FAFAFA] transition-transform duration-200',
-              !isOverviewOpen && '-rotate-90'
+              !isQuizActive && !isOverviewOpen && '-rotate-90'
             )}
           />
         </button>
@@ -142,36 +139,40 @@ export function StudyRightPanel({
           className={cn(
             'rounded-xl overflow-hidden flex transition-all duration-300 ease-in-out',
             isQuizActive
-              ? 'h-0 opacity-0'
+              ? 'h-[80px] opacity-100'
               : isOverviewOpen
                 ? 'flex-1 min-h-0 opacity-100'
                 : 'h-0 opacity-0'
           )}
           style={{
             border:
-              !isQuizActive && isOverviewOpen ? '0.5px solid #595959' : 'none',
+              (isQuizActive || isOverviewOpen) ? '0.5px solid #595959' : 'none',
           }}
         >
-          <div
-            ref={overviewRef}
-            className="flex-1 p-4 overflow-y-auto"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            <div className="markdown-content text-sm text-[#FAFAFA]/80 leading-[180%]">
-              <ReactMarkdown>{model.theory || model.description}</ReactMarkdown>
-            </div>
-          </div>
-
-          {ovThumbRatio < 1 && (
-            <div className="relative w-[3px] shrink-0 mr-2 my-4 rounded-full overflow-hidden bg-[#595959]">
+          {!isQuizActive && (
+            <>
               <div
-                className="absolute left-0 w-full rounded-full bg-[#D6D3D1] transition-[top] duration-100"
-                style={{
-                  height: `${ovThumbRatio * 100}%`,
-                  top: `${ovScrollRatio * (1 - ovThumbRatio) * 100}%`,
-                }}
-              />
-            </div>
+                ref={overviewRef}
+                className="flex-1 p-4 overflow-y-auto"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                <div className="markdown-content text-sm text-[#FAFAFA]/80 leading-[180%]">
+                  <ReactMarkdown>{model.theory || model.description}</ReactMarkdown>
+                </div>
+              </div>
+
+              {ovThumbRatio < 1 && (
+                <div className="relative w-[3px] shrink-0 mr-2 my-4 rounded-full overflow-hidden bg-[#595959]">
+                  <div
+                    className="absolute left-0 w-full rounded-full bg-[#D6D3D1] transition-[top] duration-100"
+                    style={{
+                      height: `${ovThumbRatio * 100}%`,
+                      top: `${ovScrollRatio * (1 - ovThumbRatio) * 100}%`,
+                    }}
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -252,40 +253,41 @@ export function StudyRightPanel({
       >
         <button
           onClick={() => !isQuizActive && setIsPartDescOpen((prev) => !prev)}
-          className={cn(
-            'flex items-center justify-between w-full shrink-0 transition-opacity duration-300',
-            isQuizActive && 'opacity-0 pointer-events-none h-0 overflow-hidden'
-          )}
+          className="flex items-center justify-between w-full shrink-0"
         >
           <h2 className="text-base font-bold text-[#FAFAFA]">부품 설명</h2>
           <ChevronDownIcon
             className={cn(
               'w-6 h-6 text-[#FAFAFA] transition-transform duration-200',
-              !isPartDescOpen && '-rotate-90'
+              !isQuizActive && !isPartDescOpen && '-rotate-90'
             )}
           />
         </button>
 
         <div
           className={cn(
-            'rounded-xl p-5 overflow-hidden transition-all duration-300 ease-in-out',
+            'rounded-xl overflow-hidden transition-all duration-300 ease-in-out',
             isQuizActive
-              ? 'h-0 p-0 opacity-0'
+              ? 'h-[80px] opacity-100'
               : isPartDescOpen
-                ? 'flex-1 min-h-0 opacity-100'
+                ? 'flex-1 min-h-0 opacity-100 p-5'
                 : 'h-0 p-0 opacity-0'
           )}
           style={{
             border:
-              !isQuizActive && isPartDescOpen ? '0.5px solid #595959' : 'none',
+              (isQuizActive || isPartDescOpen) ? '0.5px solid #595959' : 'none',
           }}
         >
-          {selectedPart ? (
-            <PartDescription part={selectedPart} />
-          ) : (
-            <div className="flex items-center justify-center h-full text-[#595959]">
-              <p className="text-sm">부품을 선택하세요</p>
-            </div>
+          {!isQuizActive && (
+            <>
+              {selectedPart ? (
+                <PartDescription part={selectedPart} />
+              ) : (
+                <div className="flex items-center justify-center h-full text-[#595959]">
+                  <p className="text-sm">학습을 원하는 부품을 선택해보세요.</p>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

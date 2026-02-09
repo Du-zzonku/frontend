@@ -1,5 +1,7 @@
 'use client';
 
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 import type { ViewerModel } from '@/types/viewer';
 
 interface EditPanelProps {
@@ -9,15 +11,59 @@ interface EditPanelProps {
 }
 
 export function EditPanel({ notes, onNotesChange }: EditPanelProps) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [scrollRatio, setScrollRatio] = useState(0);
+  const [thumbRatio, setThumbRatio] = useState(1);
+
+  const updateScrollbar = useCallback(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    const { scrollTop, scrollHeight, clientHeight } = el;
+    const maxScroll = scrollHeight - clientHeight;
+    if (maxScroll <= 0) {
+      setScrollRatio(0);
+      setThumbRatio(1);
+    } else {
+      setScrollRatio(scrollTop / maxScroll);
+      setThumbRatio(clientHeight / scrollHeight);
+    }
+  }, []);
+
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    updateScrollbar();
+    el.addEventListener('scroll', updateScrollbar);
+    return () => el.removeEventListener('scroll', updateScrollbar);
+  }, [updateScrollbar]);
+
+  useEffect(() => {
+    updateScrollbar();
+  }, [notes, updateScrollbar]);
+
   return (
     <div className="flex flex-col h-full px-5 pb-5">
-      <div className="flex-1 min-h-0 rounded-xl border border-[#595959]/50 p-5 overflow-auto">
+      <div className="flex-1 min-h-0 rounded-xl border border-[#595959]/50 flex overflow-hidden">
         <textarea
+          ref={textareaRef}
           value={notes}
           onChange={(e) => onNotesChange(e.target.value)}
           placeholder="학습 내용을 메모로 남겨보세요"
-          className="w-full h-full bg-transparent text-sm text-white/70 placeholder:text-[#717271] focus:outline-none resize-none leading-relaxed"
+          className="flex-1 p-5 bg-transparent text-sm text-white/70 placeholder:text-[#717271] focus:outline-none resize-none leading-relaxed overflow-y-auto"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         />
+
+        {thumbRatio < 1 && (
+          <div className="relative w-[3px] shrink-0 mr-2 my-4 rounded-full overflow-hidden bg-[#595959]">
+            <div
+              className="absolute left-0 w-full rounded-full bg-[#D6D3D1] transition-[top] duration-100"
+              style={{
+                height: `${thumbRatio * 100}%`,
+                top: `${scrollRatio * (1 - thumbRatio) * 100}%`,
+              }}
+            />
+          </div>
+        )}
       </div>
 
       <div className="mt-3 shrink-0">

@@ -66,7 +66,7 @@ export function StudyLeftPanel({
   onQuizActiveChange,
   captureCanvas,
 }: StudyLeftPanelProps) {
-  const [activeTab, setActiveTab] = useState<SidebarTab | null>('edit');
+  const [activeTab, setActiveTab] = useState<SidebarTab | null>(null);
 
   const handleTabClick = (tabId: SidebarTab) => {
     const next = activeTab === tabId ? null : tabId;
@@ -200,10 +200,7 @@ export function StudyLeftPanel({
               />
             )}
             {activeTab === 'pdf' && (
-              <PDFViewerPanel
-                modelId={modelId}
-                captureCanvas={captureCanvas}
-              />
+              <PDFViewerPanel modelId={modelId} captureCanvas={captureCanvas} />
             )}
           </div>
         </div>

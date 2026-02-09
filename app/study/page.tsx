@@ -118,8 +118,8 @@ export default function StudyPage() {
 
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-8 h-8 text-[#3B82F6] animate-spin" />
-              <span className="ml-3 text-[#FAFAFA]/50">
+              <Loader2 className="w-8 h-8 text-[#2563EB] animate-spin" />
+              <span className="ml-3 text-[#2563EB]/70">
                 모델을 불러오는 중...
               </span>
             </div>
@@ -140,8 +140,8 @@ export default function StudyPage() {
               <div ref={ref} className="h-10 mt-8">
                 {isFetchingNextPage && (
                   <div className="flex items-center justify-center">
-                    <Loader2 className="w-6 h-6 text-[#3B82F6] animate-spin" />
-                    <span className="ml-2 text-sm text-[#FAFAFA]/40">
+                    <Loader2 className="w-6 h-6 text-[#2563EB] animate-spin" />
+                    <span className="ml-2 text-sm text-[#2563EB]/70">
                       더 불러오는 중...
                     </span>
                   </div>

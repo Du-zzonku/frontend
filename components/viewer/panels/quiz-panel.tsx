@@ -71,8 +71,8 @@ export function QuizPanel({ modelId, onQuizActiveChange }: QuizPanelProps) {
   if (state === 'loading') {
     return (
       <div className="flex flex-col h-full items-center justify-center">
-        <Loader2 className="w-6 h-6 text-[#60A5FA] animate-spin mb-3" />
-        <p className="text-sm text-white/50">퀴즈를 불러오는 중...</p>
+        <Loader2 className="w-6 h-6 text-[#2563EB] animate-spin mb-3" />
+        <p className="text-sm text-[#2563EB]/70">퀴즈를 불러오는 중...</p>
       </div>
     );
   }

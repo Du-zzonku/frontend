@@ -112,8 +112,8 @@ export function PartMesh({
 
             if (isHovered) {
               // 호버 효과
-              restoreMaterial.emissive.set('#3B82F6');
-              restoreMaterial.emissiveIntensity = 0.7;
+              restoreMaterial.emissive.set('#2563EB');
+              restoreMaterial.emissiveIntensity = 0.5;
               restoreMaterial.toneMapped = true;
             } else {
               // 평상시

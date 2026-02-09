@@ -28,6 +28,7 @@ export function RotationControls({
   onRotateRightStart,
   onRotateRightEnd,
   onToggleFullscreen,
+  
 }: RotationControlsProps) {
   return (
     <div
@@ -84,9 +85,10 @@ interface SliderCardProps {
   title: string;
   value: number;
   onChange: (value: number) => void;
+  onCommit?: (value: number) => void;
 }
 
-function SliderCard({ title, value, onChange }: SliderCardProps) {
+function SliderCard({ title, value, onChange, onCommit }: SliderCardProps) {
   const [localValue, setLocalValue] = useState(value);
 
   useEffect(() => {
@@ -97,6 +99,11 @@ function SliderCard({ title, value, onChange }: SliderCardProps) {
     const newValue = Number(e.target.value);
     setLocalValue(newValue);
     onChange(newValue);
+  };
+  const handleCommit = () => {
+    if (onCommit) {
+      onCommit(localValue);
+    }
   };
 
   return (
@@ -124,7 +131,8 @@ function SliderCard({ title, value, onChange }: SliderCardProps) {
           min="0"
           max="100"
           value={localValue}
-          onChange={(e) => onChange(Number(e.target.value))}
+          onChange={handleChange}
+          onPointerUp={handleCommit} // 🔥 [추가] PC 마우스 뗌
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
         />
 
@@ -154,6 +162,7 @@ interface BottomSlidersProps {
   isLeftPanelOpen?: boolean;
   onPointerDown?: () => void;
   onPointerUp?: () => void;
+  onExplodeCommit?: (value: number) => void;
 }
 
 export function BottomSliders({
@@ -165,6 +174,7 @@ export function BottomSliders({
   isLeftPanelOpen = true,
   onPointerDown,
   onPointerUp,
+  onExplodeCommit,
 }: BottomSlidersProps) {
   const leftWidth = isLeftPanelOpen
     ? LEFT_PANEL_EXPANDED_WIDTH
@@ -185,6 +195,7 @@ export function BottomSliders({
         title="분해도 조절"
         value={explodeValue}
         onChange={onExplodeChange}
+        onCommit={onExplodeCommit}
       />
       <SliderCard
         title="확대·축소 조절"

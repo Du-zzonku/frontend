@@ -1,10 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-
-import { useGLTF } from '@react-three/drei';
+import { useCallback, useEffect, useMemo, useRef, memo } from 'react';
+import { useGLTF, meshBounds } from '@react-three/drei';
 import type { ThreeEvent } from '@react-three/fiber';
-
 import {
   Color,
   EdgesGeometry,
@@ -32,7 +30,7 @@ interface PartMeshProps {
   onPointerOut: () => void;
 }
 
-export function PartMesh({
+const PartMeshBase = ({
   part,
   position,
   scale,
@@ -42,122 +40,129 @@ export function PartMesh({
   onClick,
   onPointerOver,
   onPointerOut,
-}: PartMeshProps) {
+}: PartMeshProps) => {
   const groupRef = useRef<Group>(null);
-  const [isHovered, setIsHovered] = useState(false);
   const { scene } = useGLTF(part.glbPath);
-
-  const originalMaterials = useRef<Map<string, Material>>(new Map());
-  const appliedMaterials = useRef<Material[]>([]);
+  
+  const isHoveredRef = useRef(false); 
+  
   const clonedScene = useMemo(() => scene.clone(), [scene]);
 
-  const materialConfig = useMemo(() => {
-    if (materialType && MATERIAL_PRESET[materialType]) {
-      return MATERIAL_PRESET[materialType];
-    }
-    return { color, metalness: 0.6, roughness: 0.3, vertexColors: false };
-  }, [materialType, color]);
+  const meshMaterials = useRef<Map<string, MeshStandardMaterial>>(new Map());
 
   useEffect(() => {
-    appliedMaterials.current.forEach((mat) => mat.dispose());
-    appliedMaterials.current = [];
+    if (!clonedScene) return;
 
-    if (clonedScene) {
-      clonedScene.traverse((child) => {
-        if (child instanceof Mesh) {
-          const mesh = child;
+    clonedScene.traverse((child) => {
+      if (child instanceof Mesh) {
+        const mesh = child;
 
-          if (!originalMaterials.current.has(mesh.uuid)) {
-            const mat = Array.isArray(mesh.material)
-              ? mesh.material[0]
-              : mesh.material;
-            originalMaterials.current.set(mesh.uuid, mat.clone());
-          }
+        mesh.raycast = meshBounds;
 
-          const original = originalMaterials.current.get(
-            mesh.uuid
-          ) as MeshStandardMaterial;
-          const newMaterial = original.clone();
-          const baseColor = materialType ? materialConfig.color : color;
-          newMaterial.color = new Color(baseColor);
-          newMaterial.metalness = materialConfig.metalness;
-          newMaterial.roughness = materialConfig.roughness;
-
-          if (isSelected) {
-            newMaterial.emissive.set('#3B82F6');
-            newMaterial.emissiveIntensity = 1.2;
-          } else if (isHovered) {
-            newMaterial.emissive.set('#2563EB');
-            newMaterial.emissiveIntensity = 0.5;
-          } else {
-            newMaterial.emissive.set('#000000');
-            newMaterial.emissiveIntensity = 0;
-            if (materialConfig.vertexColors !== undefined) {
-              newMaterial.vertexColors = materialConfig.vertexColors;
-            }
-          }
-
-          newMaterial.toneMapped = true;
-          mesh.material = newMaterial;
-          appliedMaterials.current.push(newMaterial);
-
-          const existingEdges = mesh.children.find(
-            (c) => c.userData.isEdgeLine
-          );
-          if (!existingEdges && mesh.geometry) {
-            const edgesGeometry = new EdgesGeometry(mesh.geometry, 80);
-            const edgesMaterial = new LineBasicMaterial({
-              color: 0xffffff,
-              linewidth: 1,
-              transparent: true,
-              opacity: 0.3,
-            });
-            const edges = new LineSegments(edgesGeometry, edgesMaterial);
-            edges.userData.isEdgeLine = true;
-            mesh.add(edges);
-          }
+        // 재질 복제 및 저장 (최초 1회)
+        if (!meshMaterials.current.has(mesh.uuid)) {
+           const originalMat = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
+           const newMat = originalMat.clone() as MeshStandardMaterial;
+           
+           newMat.toneMapped = true; // 톤 매핑 적용
+           mesh.material = newMat;
+           meshMaterials.current.set(mesh.uuid, newMat);
         }
-      });
-    }
-  }, [clonedScene, color, materialType, materialConfig, isSelected, isHovered]);
+
+        const existingEdges = mesh.children.find((c) => c.userData.isEdgeLine);
+        if (!existingEdges && mesh.geometry) {
+          const edgesGeometry = new EdgesGeometry(mesh.geometry, 80); 
+          const edgesMaterial = new LineBasicMaterial({
+            color: 0xffffff,
+            linewidth: 1,
+            transparent: true,
+            opacity: 0.3,
+          });
+          const edges = new LineSegments(edgesGeometry, edgesMaterial);
+          edges.userData.isEdgeLine = true;
+          mesh.add(edges);
+        }
+      }
+    });
+
+    return () => {
+      meshMaterials.current.forEach((mat) => mat.dispose());
+      meshMaterials.current.clear();
+    };
+  }, [clonedScene]); 
+
 
   useEffect(() => {
-    return () => {
-      appliedMaterials.current.forEach((mat) => mat.dispose());
-    };
-  }, []);
+    const materialConfig = (materialType && MATERIAL_PRESET[materialType]) 
+      ? MATERIAL_PRESET[materialType] 
+      : { color, metalness: 0.6, roughness: 0.3, vertexColors: false };
+
+    meshMaterials.current.forEach((mat) => {
+     
+      const baseColor = materialType ? materialConfig.color : color;
+      mat.color.set(baseColor);
+      mat.metalness = materialConfig.metalness;
+      mat.roughness = materialConfig.roughness;
+      
+      if (materialConfig.vertexColors !== undefined) {
+        mat.vertexColors = materialConfig.vertexColors;
+      }
+
+      if (isSelected) {
+        mat.emissive.set('#3B82F6'); 
+        mat.emissiveIntensity = 1.2;
+      } else {
+        mat.emissive.set('#000000');
+        mat.emissiveIntensity = 0;
+      }
+    });
+  }, [color, materialType, isSelected]);
 
   const handlePointerOver = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
-    setIsHovered(true);
-    onPointerOver();
+    isHoveredRef.current = true;
+    onPointerOver(); 
     document.body.style.cursor = 'pointer';
+
+    if (isSelected) return;
+
+    meshMaterials.current.forEach((mat) => {
+      mat.emissive.set('#2563EB'); 
+      mat.emissiveIntensity = 0.5;
+    });
   };
 
   const handlePointerOut = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
-    setIsHovered(false);
+    isHoveredRef.current = false;
     onPointerOut();
     document.body.style.cursor = 'auto';
-  };
 
+    if (isSelected) return;
+
+    meshMaterials.current.forEach((mat) => {
+      mat.emissive.set('#000000');
+      mat.emissiveIntensity = 0;
+    });
+  };
+  
   const onClickRef = useRef(onClick);
   onClickRef.current = onClick;
 
   const handlePointerDown = useCallback((e: ThreeEvent<PointerEvent>) => {
-    e.stopPropagation();
-    const startX = e.nativeEvent.clientX;
-    const startY = e.nativeEvent.clientY;
-
-    const handleUp = (upEvent: PointerEvent) => {
-      const dx = upEvent.clientX - startX;
-      const dy = upEvent.clientY - startY;
-      if (Math.sqrt(dx * dx + dy * dy) < CLICK_THRESHOLD_PX) {
-        onClickRef.current();
-      }
-    };
-
-    window.addEventListener('pointerup', handleUp, { once: true });
+      e.stopPropagation();
+      const startX = e.nativeEvent.clientX;
+      const startY = e.nativeEvent.clientY;
+  
+      const handleUp = (upEvent: PointerEvent) => {
+        const dx = upEvent.clientX - startX;
+        const dy = upEvent.clientY - startY;
+        // 움직임이 5px 미만일 때만 클릭으로 인정
+        if (Math.sqrt(dx * dx + dy * dy) < CLICK_THRESHOLD_PX) {
+          onClickRef.current();
+        }
+      };
+      window.addEventListener('pointerup', handleUp, { once: true });
   }, []);
 
   return (
@@ -170,4 +175,12 @@ export function PartMesh({
       />
     </group>
   );
-}
+};
+export const PartMesh = memo(PartMeshBase, (prev, next) => {
+  return (
+    prev.part.id === next.part.id &&
+    prev.isSelected === next.isSelected &&
+    prev.color === next.color &&
+    prev.materialType === next.materialType
+  );
+});

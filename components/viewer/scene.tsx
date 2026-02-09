@@ -1,13 +1,10 @@
 'use client';
 
 import { useCallback, useMemo, useRef, useState } from 'react';
-
 import { Preload } from '@react-three/drei';
-import { Canvas } from '@react-three/fiber';
-
+import { Canvas } from '@react-three/fiber'; // events 제거
 import { ACESFilmicToneMapping, type WebGLRenderer } from 'three';
 
-import { performanceEvents } from '@/lib/performance-events';
 import { throttleTrailing } from '@/lib/throttle';
 import { useViewerStore } from '@/store/viewer-store';
 import type { CameraState, ViewerModel } from '@/types/viewer';
@@ -45,8 +42,8 @@ export function Scene({
   const rendererRef = useRef<WebGLRenderer | null>(null);
 
   const explodeRef = useRef(initialExplodeValue);
-  const lastUpdateRef = useRef(0);
-  const pendingUpdateRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Hover 스로틀링 (부모 알림용 - 그대로 유지)
   const lastHoverRef = useRef<string | null>(null);
   const emitHoverThrottled = useMemo(() => {
     return throttleTrailing((partId: string | null) => {
@@ -58,7 +55,6 @@ export function Scene({
     (partId: string | null) => {
       if (lastHoverRef.current === partId) return;
       lastHoverRef.current = partId;
-
       emitHoverThrottled(partId);
     },
     [emitHoverThrottled]
@@ -72,27 +68,15 @@ export function Scene({
   const [contextLost, setContextLost] = useState(false);
   const retryCountRef = useRef(0);
 
-  const handleExplodeChangeWrapper = (value: number) => {
+  // 드래그 중: 리액트 렌더링 없이 Ref만 업데이트 (즉시 반응)
+  const handleExplodeChangeInstant = useCallback((value: number) => {
     explodeRef.current = value;
-    const now = Date.now();
-    if (now - lastUpdateRef.current < 30) {
-      if (pendingUpdateRef.current) clearTimeout(pendingUpdateRef.current);
+  }, []);
 
-      pendingUpdateRef.current = setTimeout(() => {
-        onExplodeChange(value);
-        lastUpdateRef.current = Date.now();
-      }, 30);
-
-      return;
-    }
+  // 드래그 끝: 부모에게 저장 요청
+  const handleExplodeCommit = useCallback((value: number) => {
     onExplodeChange(value);
-    lastUpdateRef.current = now;
-
-    if (pendingUpdateRef.current) {
-      clearTimeout(pendingUpdateRef.current);
-      pendingUpdateRef.current = null;
-    }
-  };
+  }, [onExplodeChange]);
 
   const handleCreated = useCallback(
     ({ gl }: { gl: WebGLRenderer }) => {
@@ -122,10 +106,7 @@ export function Scene({
       canvas.addEventListener('webglcontextrestored', handleContextRestored);
       return () => {
         canvas.removeEventListener('webglcontextlost', handleContextLost);
-        canvas.removeEventListener(
-          'webglcontextrestored',
-          handleContextRestored
-        );
+        canvas.removeEventListener('webglcontextrestored', handleContextRestored);
       };
     },
     [onCaptureReady]
@@ -184,9 +165,8 @@ export function Scene({
           >
             <Canvas
               key={canvasKey}
-              dpr={[1, 2]}
-              performance={{ min: 0.5 }}
-              events={performanceEvents}
+              dpr={[1, 2]} 
+              performance={{ min: 0.5 }} 
               camera={{ position: [1, 0.5, 1], fov: 45 }}
               gl={{
                 antialias: true,
@@ -196,22 +176,22 @@ export function Scene({
                 preserveDrawingBuffer: true,
                 powerPreference: 'high-performance',
               }}
-              shadows={true}
+              shadows={true} 
               style={{ background: 'transparent' }}
               onCreated={handleCreated}
+           
             >
               <CanvasContent
                 model={model}
                 explodeRef={explodeRef}
                 selectedPartIds={selectedPartIds}
                 onPartClick={onPartClick}
-                onPartHover={onPartHover}
+                onPartHover={handlePartHover}
                 controlsRef={controlsRef}
                 initialCameraState={initialCameraState}
                 onCameraChange={handleCameraChange}
                 onZoomChange={handleZoomChange}
               />
-
               <Preload all />
             </Canvas>
           </div>
@@ -226,7 +206,9 @@ export function Scene({
           <BottomSliders
             explodeValue={initialExplodeValue}
             zoomValue={zoomValue}
-            onExplodeChange={handleExplodeChangeWrapper}
+            onExplodeChange={handleExplodeChangeInstant} 
+            onExplodeCommit={handleExplodeCommit}
+
             onZoomChange={handleZoomSliderChange}
             isFullscreen={isFullscreen}
             isLeftPanelOpen={isLeftPanelOpen}

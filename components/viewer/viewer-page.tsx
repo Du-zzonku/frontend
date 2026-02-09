@@ -90,18 +90,12 @@ export function ViewerPage({ model, modelId }: ViewerPageProps) {
     }
   }, [isHydrated, isSceneReady]);
 
-  if (!isHydrated) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-primary animate-pulse">Loading...</div>
-      </div>
-    );
-  }
+  const showScene = isHydrated && isSceneReady;
 
   return (
     <div className="h-screen relative overflow-hidden bg-[#070b14]">
       <div className="absolute inset-0 z-0">
-        {isSceneReady ? (
+        {showScene ? (
           <Scene
             model={model}
             explodeValue={explodeValue}
@@ -134,44 +128,50 @@ export function ViewerPage({ model, modelId }: ViewerPageProps) {
         <StudyHeader modelId={modelId} />
       </div>
 
-      <div
-        className={`absolute top-[76px] left-3 bottom-3 z-10 transition-[opacity,transform] duration-500 ease-in-out ${
-          isFullscreen
-            ? 'opacity-0 pointer-events-none -translate-x-10'
-            : 'opacity-100 translate-x-0'
-        }`}
-      >
-        <StudyLeftPanel
-          model={model}
-          modelId={modelId}
-          notes={notes}
-          onNotesChange={setNotes}
-          onPanelToggle={setIsLeftPanelOpen}
-          onQuizActiveChange={setIsQuizActive}
-          captureCanvas={() => captureRef.current?.() ?? null}
-          selectedParts={model.parts.filter((p) =>
-            selectedPartIds.includes(p.id)
+      {isHydrated && (
+        <>
+          <div
+            className={`absolute top-[76px] left-3 bottom-3 z-10 transition-[opacity,transform] duration-500 ease-in-out ${
+              isFullscreen
+                ? 'opacity-0 pointer-events-none -translate-x-10'
+                : 'opacity-100 translate-x-0'
+            }`}
+          >
+            <StudyLeftPanel
+              model={model}
+              modelId={modelId}
+              notes={notes}
+              onNotesChange={setNotes}
+              onPanelToggle={setIsLeftPanelOpen}
+              onQuizActiveChange={setIsQuizActive}
+              captureCanvas={() => captureRef.current?.() ?? null}
+              selectedParts={model.parts.filter((p) =>
+                selectedPartIds.includes(p.id)
+              )}
+            />
+          </div>
+
+          <div
+            className={`absolute top-[76px] right-3 bottom-3 w-[320px] z-10 transition-[opacity,transform] duration-500 ease-in-out ${
+              isFullscreen
+                ? 'opacity-0 pointer-events-none translate-x-10'
+                : 'opacity-100 translate-x-0'
+            }`}
+          >
+            <StudyRightPanel
+              model={model}
+              selectedPartIds={selectedPartIds}
+              onPartSelect={toggleSelectedPartId}
+              isQuizActive={isQuizActive}
+            />
+          </div>
+
+          {hoveredPartId && selectedPartIds.length === 0 && !isFullscreen && (
+            <PartTooltip
+              part={model.parts.find((p) => p.id === hoveredPartId)!}
+            />
           )}
-        />
-      </div>
-
-      <div
-        className={`absolute top-[76px] right-3 bottom-3 w-[320px] z-10 transition-[opacity,transform] duration-500 ease-in-out ${
-          isFullscreen
-            ? 'opacity-0 pointer-events-none translate-x-10'
-            : 'opacity-100 translate-x-0'
-        }`}
-      >
-        <StudyRightPanel
-          model={model}
-          selectedPartIds={selectedPartIds}
-          onPartSelect={toggleSelectedPartId}
-          isQuizActive={isQuizActive}
-        />
-      </div>
-
-      {hoveredPartId && selectedPartIds.length === 0 && !isFullscreen && (
-        <PartTooltip part={model.parts.find((p) => p.id === hoveredPartId)!} />
+        </>
       )}
     </div>
   );

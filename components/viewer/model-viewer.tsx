@@ -142,12 +142,33 @@ export function ModelViewer({
       {} as Record<string, string>
     );
   }, [model.parts]);
+  const lastAppliedExplodeRef = useRef<number>(-1);
+  const isAnimatingRef = useRef(false);
+  const frameSkipRef = useRef(0);
 
   useFrame(() => {
-    const targetValue = explodeRef.current;
-    currentExplodeRef.current = THREE.MathUtils.lerp(currentExplodeRef.current, targetValue, 0.2);
+    frameSkipRef.current = (frameSkipRef.current + 1) % 2; // 2프레임 중 1번만
+    if (frameSkipRef.current !== 0) return;
 
-    const smoothProgress = currentExplodeRef.current / 100;
+    const targetValue = explodeRef.current;
+    const prev = currentExplodeRef.current;
+    const next = THREE.MathUtils.lerp(prev, targetValue, 0.2);
+    currentExplodeRef.current = next;
+
+    const delta = Math.abs(next - lastAppliedExplodeRef.current);
+
+    if (delta < 0.02) {
+      if (Math.abs(targetValue - next) < 0.05) {
+        isAnimatingRef.current = false;
+        return;
+      }
+      if (!isAnimatingRef.current) return;
+    } else {
+      isAnimatingRef.current = true;
+    }
+    lastAppliedExplodeRef.current = next;
+
+    const smoothProgress = next / 100;
 
     itemsRef.current.forEach((obj) => {
       const data = obj.userData as StaticPartData['animData'] & {

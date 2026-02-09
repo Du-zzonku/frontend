@@ -73,6 +73,7 @@ export function ModelViewer({
 }: ModelViewerProps) {
   const groupRef = useRef<Group>(null);
   const itemsRef = useRef<Map<string, Object3D>>(new Map());
+  const currentExplodeRef = useRef(0);
 
   const staticParts = useMemo(() => {
     const result: StaticPartData[] = [];
@@ -143,7 +144,10 @@ export function ModelViewer({
   }, [model.parts]);
 
   useFrame(() => {
-    const currentProgress = explodeRef.current / 100;
+    const targetValue = explodeRef.current;
+    currentExplodeRef.current = THREE.MathUtils.lerp(currentExplodeRef.current, targetValue, 0.2);
+
+    const smoothProgress = currentExplodeRef.current / 100;
 
     itemsRef.current.forEach((obj) => {
       const data = obj.userData as StaticPartData['animData'] & {
@@ -152,7 +156,7 @@ export function ModelViewer({
       if (!data) return;
 
       const rawProgress = getNodeExplodeProgress(
-        currentProgress,
+        smoothProgress,
         data.start,
         data.duration
       );

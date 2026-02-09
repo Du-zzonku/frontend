@@ -1,7 +1,7 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { Canvas , events} from '@react-three/fiber';
 import { Preload } from '@react-three/drei'; // 🔥 초기 로딩 렉 제거
 import { ACESFilmicToneMapping, type WebGLRenderer } from 'three';
 
@@ -25,6 +25,53 @@ interface SceneProps {
   onCaptureReady?: (capture: () => string | null) => void;
 }
 
+function throttleTrailing<T extends (...args: any[]) => void>(fn: T, wait: number) {
+  let last = 0;
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let lastArgs: any[] | null = null;
+
+  return (...args: Parameters<T>) => {
+    const now = performance.now();
+    const remaining = wait - (now - last);
+    lastArgs = args;
+
+    if (remaining <= 0) {
+      if (timer) { clearTimeout(timer); timer = null; }
+      last = now;
+      fn(...args);
+      lastArgs = null;
+      return;
+    }
+
+    if (!timer) {
+      timer = setTimeout(() => {
+        timer = null;
+        last = performance.now();
+        if (lastArgs) fn(...(lastArgs as Parameters<T>));
+        lastArgs = null;
+      }, remaining);
+    }
+  };
+}
+
+const performanceEvents = (store: any) => {
+  const defaultEvents = events(store);
+  let lastCall = 0;
+
+  return {
+    ...defaultEvents,
+    compute: (event: any, state: any) => {
+      const now = performance.now();
+      // 50ms가 안 지났으면 계산 안 함 (Skip)
+      if (now - lastCall < 50) return;
+      
+      lastCall = now;
+      defaultEvents.compute?.(event, state);
+    },
+  };
+};
+
+
 export function Scene({
   model,
   explodeValue: initialExplodeValue, // 초기값
@@ -44,9 +91,21 @@ export function Scene({
   const explodeRef = useRef(initialExplodeValue);
   const lastUpdateRef = useRef(0);
   const pendingUpdateRef = useRef<NodeJS.Timeout | null>(null);
-  
-  // UI 표시용 State (슬라이더 UI만 업데이트)
-  //const [uiExplodeValue, setUiExplodeValue] = useState(initialExplodeValue);
+  const lastHoverRef = useRef<string | null>(null);
+  const emitHoverThrottled = useMemo(() => {
+    return throttleTrailing((partId: string | null) => {
+      onPartHover(partId);
+    }, 50); // 30~60ms 추천. 일단 50ms
+  }, [onPartHover]);
+
+  const handlePartHover = useCallback((partId: string | null) => {
+    // 같은 파트면 상태 업데이트 자체를 막아버림 (가장 큰 효과)
+    if (lastHoverRef.current === partId) return;
+    lastHoverRef.current = partId;
+
+    emitHoverThrottled(partId);
+  }, [emitHoverThrottled]);
+
 
   // UI 인터랙션 상태 (true면 3D 마우스 감지 끔)
   const [isInteracting, setIsInteracting] = useState(false);
@@ -57,12 +116,12 @@ export function Scene({
   const [contextLost, setContextLost] = useState(false);
   const retryCountRef = useRef(0);
 
-  // 🔥 최적화 핵심 2: 슬라이더 변경 핸들러 분리
+  
+
   const handleExplodeChangeWrapper = (value: number) => {
-    explodeRef.current = value; // 3D 쪽으로 값 직송 (렌더링 X)
+    explodeRef.current = value; 
     const now = Date.now();
     if (now - lastUpdateRef.current < 30) {
-      // 마지막 값은 놓치면 안 되므로, 타이머로 예약해둠 (Trailing)
       if (pendingUpdateRef.current) clearTimeout(pendingUpdateRef.current);
       
       pendingUpdateRef.current = setTimeout(() => {
@@ -147,7 +206,8 @@ export function Scene({
             <Canvas
               key={canvasKey}
               dpr={[1, 2]} // 🔥 화질 선명하게 (Retina 대응)
-              performance={{ min: 0.9 }} // 프레임 방어
+              performance={{ min: 0.5 }} // 프레임 방어
+              events={performanceEvents}
               camera={{ position: [1, 0.5, 1], fov: 45 }}
               gl={{
                 antialias: true,
@@ -157,21 +217,23 @@ export function Scene({
                 preserveDrawingBuffer: true,
                 powerPreference: 'high-performance',
               }}
-              shadows
+              shadows={true}
               style={{ background: 'transparent' }}
               onCreated={handleCreated}
             >
+            
               <CanvasContent
                 model={model}
                 explodeRef={explodeRef} // 🔥 값이 아니라 Ref 전달
                 selectedPartIds={selectedPartIds}
                 onPartClick={onPartClick}
-                onPartHover={onPartHover}
+                onPartHover={onPartHover} 
                 controlsRef={controlsRef}
                 initialCameraState={initialCameraState}
                 onCameraChange={handleCameraChange}
                 onZoomChange={handleZoomChange}
               />
+              
               <Preload all /> {/* 🔥 쉐이더 미리 컴파일 */}
             </Canvas>
           </div>

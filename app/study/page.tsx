@@ -110,7 +110,7 @@ export default function StudyPage() {
       <StudyNav />
       <HeroSection />
 
-      <div className="px-6 md:px-12 lg:px-16 xl:px-20 pb-16 space-y-12">
+      <div className="px-6 md:px-12 lg:px-16 xl:px-20 pb-16 pt-20 space-y-12">
         <section>
           <h2 className="text-2xl md:text-3xl lg:text-[2rem] font-bold text-[#FAFAFA] leading-tight mb-6">
             기계공학

@@ -169,10 +169,7 @@ export function AIChatPanel({
             disabled={!input.trim() || isLoading}
             className="w-[46px] h-[46px] shrink-0 rounded-xl text-white flex items-center justify-center transition-colors disabled:cursor-not-allowed"
             style={{
-              background:
-                input.trim() && !isLoading
-                  ? 'linear-gradient(135deg, #2563EB, #3B82F6)'
-                  : '#B8B8B8',
+              background: 'linear-gradient(135deg, #2563EB, #3B82F6)',
             }}
           >
             <Send className="w-4 h-4" />
@@ -187,11 +184,9 @@ export function AIChatPanel({
           disabled={isLoading || aiHistory.length === 0}
           className={cn(
             'relative w-full h-[48px] rounded-xl text-sm font-medium transition-colors disabled:cursor-not-allowed flex items-center justify-center',
-            aiHistory.length === 0 && wasCleared
-              ? 'bg-white text-[#1A1A1A]'
-              : aiHistory.length > 0
-                ? 'text-white hover:opacity-90'
-                : 'bg-[#B8B8B8] text-white'
+            aiHistory.length > 0
+              ? 'text-white hover:opacity-90'
+              : 'bg-[#B8B8B8] text-white'
           )}
           style={
             aiHistory.length > 0

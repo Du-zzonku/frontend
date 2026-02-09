@@ -418,7 +418,7 @@ function PDFViewerPanel({ modelId, captureCanvas }: PDFViewerPanelProps) {
                 <item.icon className="w-5 h-5 text-[#FAFAFA]" />
               </div>
 
-              <span className="flex-1 text-sm text-[#FAFAFA] text-left whitespace-nowrap">
+              <span className="flex-1 text-xs text-[#FAFAFA] text-left">
                 {item.label}
               </span>
 

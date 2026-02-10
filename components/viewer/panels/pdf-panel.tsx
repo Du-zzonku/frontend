@@ -103,7 +103,10 @@ export function PDFViewerPanel({
 
         return {
           quizQuestion: quiz?.question ?? `문제 ${r.questionId}`,
-          quizAnswer: `선택: ${userAnswerStr} / 정답: ${r.correctAnswer}`,
+          quizAnswer: `<strong>선택:</strong> ${userAnswerStr} / <strong>정답:</strong> ${r.correctAnswer}`,
+          explanation: r.explanation
+            ? `<strong>해설:</strong> ${r.explanation}`
+            : undefined,
         };
       });
     }

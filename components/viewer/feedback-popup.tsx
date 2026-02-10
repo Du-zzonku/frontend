@@ -90,9 +90,7 @@ function FeedbackPopup({
           width: '255px',
           padding: '20px 12px',
           gap: '24px',
-          background: 'rgba(26, 26, 26, 0.5)',
-          backdropFilter: 'blur(2px)',
-          WebkitBackdropFilter: 'blur(2px)',
+          background: '#1a1a1a',
         }}
       >
         <div className="flex items-center justify-between w-full px-1">

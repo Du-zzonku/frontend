@@ -131,6 +131,8 @@ export function PDFViewerPanel({
 
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
+
+      triggerPdfFeedback();
     } catch {
       setError('미리보기에 실패했습니다. 다시 시도해주세요.');
     } finally {

@@ -44,11 +44,12 @@ export function QuizPanel({ modelId, onQuizActiveChange }: QuizPanelProps) {
   const resultsScrollRef = useRef<HTMLDivElement>(null);
   const { triggerFeedback: triggerQuizFeedback, popup: quizFeedbackPopup } =
     useQuizFeedback();
-  useScrollBottomDetect(
-    resultsScrollRef,
-    triggerQuizFeedback,
-    state === 'results'
-  );
+
+  useEffect(() => {
+    if (state === 'results') {
+      triggerQuizFeedback();
+    }
+  }, [state, triggerQuizFeedback]);
 
   useEffect(() => {
     onQuizActiveChange?.(state !== 'idle');

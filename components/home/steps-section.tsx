@@ -1,81 +1,71 @@
-import { MessageSquare, MousePointerClick, RotateCcw } from 'lucide-react';
+import Image from 'next/image';
 
 const steps = [
   {
-    icon: MousePointerClick,
-    step: 'STEP 1',
-    title: '모델 선택',
-    description: (
-      <>
-        엔진, 로봇팔, 서스펜션 등<br />
-        학습하고 싶은 모델을 선택하세요
-      </>
-    ),
-    showConnector: true,
+    label: 'STEP 1. 구조물을 선택 하세요',
+    position: { left: 'calc(50% - 505px)', top: '120px' },
   },
   {
-    icon: RotateCcw,
-    step: 'STEP 2',
-    title: '3D 탐색',
-    description: (
-      <>
-        회전, 확대, 분해하며
-        <br />
-        구조를 직접 탐색하세요
-      </>
-    ),
-    showConnector: true,
+    label: 'STEP 2. 궁금한 내용은 AI에게 바로 물어보세요',
+    position: { left: 'calc(50% - 505px)', top: '433px' },
   },
   {
-    icon: MessageSquare,
-    step: 'STEP 3',
-    title: 'AI와 학습',
-    description: (
-      <>
-        궁금한 점을 AI에게 질문하고
-        <br />
-        심화 학습을 진행하세요
-      </>
-    ),
-    showConnector: false,
+    label: 'STEP 3. 직접 돌리고, 확대하고, 분해하세요',
+    position: { left: 'calc(50% + 200px)', top: '80px' },
+  },
+  {
+    label: 'STEP 4. 이해한 내용을 기록으로 남기세요',
+    position: { left: 'calc(50% + 250px)', top: '406px' },
   },
 ];
 
 export function StepsSection() {
   return (
-    <section className="relative py-20 px-6 bg-card/50">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            이렇게 학습하세요
-          </h2>
-          <p className="text-muted-foreground">
-            간단한 3단계로 기계 구조 학습을 시작할 수 있습니다
-          </p>
+    <section className="relative w-full bg-[#070B14] overflow-hidden">
+      <div className="text-center pt-20 relative z-10">
+        <h2 className="text-[64px] font-bold text-[#FAFAFA] mb-4 leading-tight">
+          이렇게 학습하세요
+        </h2>
+        <p className="text-[22px] text-[#B8B8B8] mb-[65px]">
+          3D 탐색과 AI 질문으로 완성하는 학습 과정
+        </p>
+      </div>
+
+      <div className="relative w-full h-[732px]">
+        <div className="absolute inset-0">
+          <Image
+            src="/root/image3.png"
+            alt="SIMVEX 학습 과정"
+            fill
+            className="object-cover"
+            style={{ objectPosition: 'center 95%' }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background: 'rgba(4, 10, 46, 0.1)',
+              backdropFilter: 'blur(3.5px)',
+              WebkitBackdropFilter: 'blur(3.5px)',
+            }}
+          />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {steps.map((item) => (
-            <div key={item.step} className="relative text-center">
-              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-primary/20 flex items-center justify-center border-2 border-primary">
-                <item.icon className="w-7 h-7 text-primary" />
-              </div>
-              {item.showConnector && (
-                <div
-                  className="absolute top-8 left-1/2 w-full h-0.5 bg-linear-to-r from-transparent via-border to-transparent hidden md:block"
-                  style={{ transform: 'translateX(50%)' }}
-                />
-              )}
-              <div className="text-sm text-primary font-medium mb-2">
-                {item.step}
-              </div>
-              <h3 className="text-xl font-semibold text-foreground mb-3">
-                {item.title}
-              </h3>
-              <p className="text-muted-foreground">{item.description}</p>
-            </div>
-          ))}
-        </div>
+        {steps.map((step) => (
+          <div
+            key={step.label}
+            className="absolute flex items-center rounded-full px-10 py-3"
+            style={{
+              height: '46px',
+              left: step.position.left,
+              top: step.position.top,
+              background: 'rgba(89, 89, 89, 0.2)',
+            }}
+          >
+            <span className="text-sm text-[#FAFAFA] whitespace-nowrap">
+              {step.label}
+            </span>
+          </div>
+        ))}
       </div>
     </section>
   );

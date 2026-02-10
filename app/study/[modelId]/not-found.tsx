@@ -8,7 +8,7 @@ export default function NotFound() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="flex flex-col items-center justify-center h-[calc(100vh-60px)]">
+      <main className="flex flex-col items-center justify-center h-[calc(100vh-64px)]">
         <div className="text-center">
           <AlertCircle className="w-16 h-16 text-destructive mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-foreground mb-2">

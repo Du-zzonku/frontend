@@ -1,60 +1,89 @@
-import { BookOpen, GraduationCap, Microscope, Wrench } from 'lucide-react';
+import Image from 'next/image';
 
 const audiences = [
   {
-    icon: GraduationCap,
-    title: '공대생',
-    description: '기계공학, 자동차공학 등 전공 학습에 필요한 부품 구조 이해',
+    image: '/root/image5.png',
+    alt: '공대생 아이콘',
+    lines: ['전공 학습에 필요한', '부품 구조 이해가 필요한'],
+    bold: '공대생',
   },
   {
-    icon: Microscope,
-    title: '과학기술 학습자',
-    description: '기계 원리에 관심 있는 일반인과 자기주도 학습자',
+    image: '/root/image6.png',
+    alt: '학습자 아이콘',
+    lines: ['복잡한 기계 원리를 직관적으로', '이해하고 싶은 '],
+    bold: '관련 학습자',
   },
   {
-    icon: Wrench,
-    title: '현장 엔지니어',
-    description: '신입 교육이나 복습이 필요한 실무 엔지니어',
-  },
-  {
-    icon: BookOpen,
-    title: '교육자',
-    description: '공학 수업에 시각 자료가 필요한 교수님과 강사분',
+    image: '/root/image7.png',
+    alt: '사용자 아이콘',
+    lines: ['기계 원리를 쉽게 이해하고 싶은'],
+    bold: '사용자',
   },
 ];
 
 export function TargetAudienceSection() {
   return (
-    <section className="relative py-20 px-6 bg-card/50">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            누구를 위한 플랫폼인가요?
-          </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            SIMVEX는 공학과 과학기술 분야를 학습하는 모든 분들을 위해
-            만들어졌습니다
-          </p>
-        </div>
+    <section className="relative w-full min-h-screen bg-[#070B14] flex flex-col items-center justify-center px-6">
+      <div className="text-center mb-16">
+        <h2 className="text-3xl md:text-4xl lg:text-[2.5rem] font-bold text-[#FAFAFA] mb-4 leading-tight">
+          이런 분들을 위해 만들었어요
+        </h2>
+        <p className="text-sm md:text-base text-[#B8B8B8] leading-relaxed">
+          SIMVEX는 공학과 과학기술 분야를 학습하는 모든 분들을{' '}
+          <strong className="text-[#FAFAFA]">위해</strong> 만들어졌습니다.
+        </p>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {audiences.map((audience) => (
+      <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+        {audiences.map((audience) => (
+          <div
+            key={audience.bold}
+            className="flex flex-col items-center w-[340px] h-[400px] rounded-[20px] border border-[#1E40AF] px-8 py-12"
+            style={{
+              background: 'rgba(7, 11, 20, 0.2)',
+              boxShadow:
+                '-4px -4px 20px rgba(29, 78, 216, 0.3), 4px 4px 20px rgba(29, 78, 216, 0.3)',
+            }}
+          >
             <div
-              key={audience.title}
-              className="glass-panel p-6 text-center hover:border-primary/50 transition-colors group"
+              className="flex items-center justify-center rounded-full px-10 py-3 w-[276px] h-[76px] border border-white/10"
+              style={{
+                background: 'rgba(89, 89, 89, 0.2)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+              }}
             >
-              <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                <audience.icon className="w-7 h-7 text-primary" />
-              </div>
-              <h3 className="font-semibold text-foreground mb-2">
-                {audience.title}
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                {audience.description}
+              <p className="text-sm text-[#FAFAFA] text-center leading-snug">
+                {audience.lines.map((line, i) => (
+                  <span key={i}>
+                    {line}
+                    {i < audience.lines.length - 1 && <br />}
+                  </span>
+                ))}{' '}
+                <strong className="font-bold">{audience.bold}</strong>
               </p>
             </div>
-          ))}
-        </div>
+
+            <div className="relative flex-1 flex items-center justify-center">
+              <div
+                className="absolute w-[145px] h-[145px] rounded-full pointer-events-none"
+                style={{
+                  background:
+                    'radial-gradient(50% 50% at 50% 50%, rgba(96, 165, 250, 0.5) 0%, rgba(59, 130, 246, 0.5) 25.41%, rgba(37, 99, 235, 0.5) 49.61%, rgba(29, 78, 216, 0.5) 71.61%, rgba(30, 64, 175, 0.5) 85.8%, rgba(4, 10, 46, 0.5) 100%)',
+                  filter: 'blur(50px)',
+                }}
+              />
+              <div className="relative w-[140px] h-[140px]">
+                <Image
+                  src={audience.image}
+                  alt={audience.alt}
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );

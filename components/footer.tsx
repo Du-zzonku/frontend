@@ -1,81 +1,32 @@
-function SimvexFooterLogo() {
+import Link from 'next/link';
+
+function SimvexFooterLogoNew() {
   return (
     <svg
-      width="119"
-      height="24"
-      viewBox="0 0 119 24"
+      width="146"
+      height="29"
+      viewBox="0 0 146 29"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M13.0312 6.78125C12.8438 5 11.4062 3.9375 9.125 3.9375C6.75 3.9375 5.4375 5.03125 5.40625 6.53125C5.375 8.15625 7.09375 8.90625 9.03125 9.34375L11.0625 9.84375C14.9375 10.7188 17.8438 12.6875 17.8438 16.4688C17.8438 20.625 14.5938 23.25 9.09375 23.25C3.625 23.25 0.125 20.7188 0 15.875H4.5625C4.71875 18.1562 6.53125 19.3125 9.03125 19.3125C11.5 19.3125 13.0938 18.1562 13.0938 16.4688C13.0938 14.9375 11.6875 14.2188 9.21875 13.5938L6.75 13C2.9375 12.0625 0.59375 10.1562 0.59375 6.84375C0.59375 2.71875 4.21875 0 9.15625 0C14.1562 0 17.4688 2.78125 17.5312 6.78125H13.0312ZM25.5938 0.3125V22.9375H20.9062V0.3125H25.5938ZM29.4062 0.3125H35.2188L41.5 15.6562H41.75L48.0312 0.3125H53.8438V22.9375H49.2812V8.125H49.0938L43.1875 22.8438H40.0625L34.1562 8.0625H33.9688V22.9375H29.4062V0.3125ZM61.625 0.3125L67.125 17.5625H67.3438L72.875 0.3125H78.0625L70.25 22.9375H64.2188L56.375 0.3125H61.625ZM80.625 22.9375V0.3125H95.8125V4.1875H85.3125V9.6875H95.0312V13.5625H85.3125V19.0625H95.8438V22.9375H80.625ZM103.812 0.3125L108.438 8.09375H108.594L113.25 0.3125H118.562L111.656 11.625L118.719 22.9375H113.281L108.594 15.1562H108.438L103.75 22.9375H98.3438L105.438 11.625L98.4688 0.3125H103.812Z"
-        fill="url(#paint0_footer_logo)"
+        d="M15.9473 8.29868C15.7178 6.11883 13.9586 4.81857 11.1669 4.81857C8.26044 4.81857 6.65423 6.15707 6.61599 7.99274C6.57775 9.98137 8.68111 10.8992 11.0522 11.4346L13.538 12.0465C18.2801 13.1173 21.8367 15.5266 21.8367 20.154C21.8367 25.2403 17.8594 28.4527 11.1287 28.4527C4.43614 28.4527 0.152924 25.3551 -4.79445e-05 19.4274H5.58343C5.77465 22.2191 7.99274 23.6341 11.0522 23.6341C14.0734 23.6341 16.0238 22.2191 16.0238 20.154C16.0238 18.2801 14.3028 17.4005 11.2816 16.6357L8.26044 15.909C3.59479 14.7617 0.726569 12.4289 0.726569 8.37517C0.726569 3.32709 5.16276 -5.18411e-05 11.2052 -5.18411e-05C17.324 -5.18411e-05 21.3778 3.40358 21.4543 8.29868H15.9473ZM31.321 0.382378V28.0703H25.5845V0.382378H31.321ZM35.9866 0.382378H43.0998L50.7867 19.1597H51.0926L58.7794 0.382378H65.8926V28.0703H60.3092V9.94313H60.0797L52.8518 27.9556H49.0275L41.7996 9.86664H41.5701V28.0703H35.9866V0.382378ZM75.4152 0.382378L82.1459 21.4925H82.4136L89.1826 0.382378H95.531L85.9702 28.0703H78.5893L68.9903 0.382378H75.4152ZM98.6669 28.0703V0.382378H117.253V5.12451H104.403V11.8553H116.297V16.5974H104.403V23.3282H117.291V28.0703H98.6669ZM127.043 0.382378L132.703 9.90489H132.894L138.593 0.382378H145.094L136.642 14.2263L145.285 28.0703H138.631L132.894 18.5478H132.703L126.967 28.0703H120.351L129.032 14.2263L120.504 0.382378H127.043Z"
+        fill="url(#paint0_footer_logo_new)"
       />
       <defs>
         <linearGradient
-          id="paint0_footer_logo"
-          x1="-1.15625"
-          y1="11.4375"
-          x2="187.844"
-          y2="11.4375"
+          id="paint0_footer_logo_new"
+          x1="-1.41504"
+          y1="14.5703"
+          x2="146.585"
+          y2="14.5703"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#3B82F6" />
-          <stop offset="0.5" stopColor="#1E40AF" />
-          <stop offset="1" stopColor="#172554" />
+          <stop stopColor="#FAFAFA" />
+          <stop offset="0.568828" stopColor="#3B82F6" />
+          <stop offset="1" stopColor="#1E40AF" />
         </linearGradient>
       </defs>
-    </svg>
-  );
-}
-
-function FacebookIcon() {
-  return (
-    <svg
-      width="10"
-      height="18"
-      viewBox="0 0 10 18"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M6.39 17.988H3.27V8.994H0V6.27H3.27V4.542C3.27 1.764 4.422 0 7.656 0H10V2.724H8.406C7.2 2.724 6.396 3.168 6.396 4.44V6.27H9.978L9.594 8.994H6.39V17.988Z"
-        fill="#8A8A8A"
-      />
-    </svg>
-  );
-}
-
-function LinkedInIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M3.578 5.238H0.264V15.99H3.578V5.238ZM1.92 3.804C2.952 3.804 3.792 2.946 3.792 1.902C3.792 0.858 2.952 0 1.92 0C0.882 0 0.048 0.858 0.048 1.902C0.048 2.946 0.882 3.804 1.92 3.804ZM15.948 15.99H12.648V10.764C12.648 9.534 12.624 7.962 10.95 7.962C9.246 7.962 8.994 9.294 8.994 10.674V15.99H5.694V5.238H8.868V6.672H8.916C9.354 5.844 10.41 4.968 11.988 4.968C15.336 4.968 15.954 7.17 15.954 10.014V15.99H15.948Z"
-        fill="#8A8A8A"
-      />
-    </svg>
-  );
-}
-
-function TwitterIcon() {
-  return (
-    <svg
-      width="18"
-      height="14"
-      viewBox="0 0 18 14"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M17.946 1.656C17.28 1.95 16.566 2.148 15.816 2.238C16.584 1.782 17.16 1.062 17.43 0.204C16.71 0.63 15.918 0.93 15.078 1.104C14.394 0.378 13.428 0 12.312 0C10.2 0 8.484 1.716 8.484 3.834C8.484 4.128 8.514 4.41 8.58 4.68C5.604 4.536 2.97 3.012 1.212 0.696C0.894 1.242 0.708 1.782 0.708 2.37C0.708 3.462 1.266 4.428 2.112 4.998C1.596 4.98 1.11 4.836 0.684 4.602V4.644C0.684 6.498 2.01 8.04 3.774 8.388C3.462 8.472 3.126 8.514 2.784 8.514C2.538 8.514 2.292 8.496 2.058 8.448C2.55 9.96 3.966 11.064 5.634 11.1C4.338 12.12 2.712 12.732 0.948 12.732C0.642 12.732 0.348 12.714 0.054 12.678C1.722 13.758 3.678 14.382 5.79 14.382C12.3 14.382 15.87 8.574 15.87 3.534V3.054C16.602 2.532 17.232 1.89 17.946 1.656Z"
-        fill="#8A8A8A"
-      />
     </svg>
   );
 }
@@ -173,93 +124,58 @@ function YoutubeIcon() {
 }
 
 export function Footer() {
-  const infoLinks = [
-    'Home',
-    'About Us',
-    'Services',
-    'Gallery',
-    'Blog',
-    'Contact',
-  ];
-  const serviceLinks = [
-    'Website Development',
-    'Application Development',
-    'UI/UX Design',
-    'Digital Marketing',
-    'SEO Backlinks',
-    'Market Analysis',
-  ];
-  const supportLinks = ['Help Center', 'FAQ', 'News', 'Career', 'Terms of Use'];
-
   return (
-    <footer className="bg-[#717271] text-[#FAFAFA]">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 xl:px-20 py-10">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="space-y-3">
-            <SimvexFooterLogo />
-            <p className="text-xs text-[#FAFAFA]/70 leading-relaxed">
-              Lorem Ipsum, 235 Simply,
-              <br />
-              printing, Pin 309 309
-            </p>
-            <p className="text-xs text-[#FAFAFA]/70">roots00@gmail.com</p>
-            <p className="text-xs text-[#FAFAFA]/70">+91 80005 54442</p>
+    <footer className="bg-[#040A2E] text-[#FAFAFA]">
+      <div className="h-[200px] bg-gradient-to-b from-[#070B14] to-[#040A2E]" />
+
+      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 xl:px-20 py-16">
+        <div className="flex flex-col md:flex-row items-start">
+          <div className="shrink-0">
+            <SimvexFooterLogoNew />
+            <div className="flex flex-col gap-[20px] mt-6">
+              <p className="text-[16px] text-[#FAFAFA]/70 leading-relaxed">
+                서울특별시 테헤란로 152,
+                <br />
+                이노베이션 센터 9층 SIMVEX
+                <br />
+                (역삼동, 강남구)
+              </p>
+              <p className="text-[16px] text-[#FAFAFA]/70">SIMVEX@gmail.com</p>
+              <p className="text-[16px] text-[#FAFAFA]/70">+91 80005 54442</p>
+            </div>
           </div>
 
-          <div>
-            <h4 className="text-sm font-semibold mb-4">Information</h4>
-            <ul className="space-y-2">
-              {infoLinks.map((link) => (
-                <li key={link}>
-                  <span className="text-xs text-[#FAFAFA]/70 hover:text-[#FAFAFA] transition-colors cursor-default">
-                    {link}
-                  </span>
-                </li>
-              ))}
-            </ul>
+          <div className="ml-[320px]">
+            <h4 className="text-[24px] font-semibold">Home</h4>
           </div>
 
-          <div>
-            <h4 className="text-sm font-semibold mb-4">Services</h4>
+          <div className="ml-[288px]">
+            <h4 className="text-[24px] font-semibold mb-4">Study</h4>
             <ul className="space-y-2">
-              {serviceLinks.map((link) => (
-                <li key={link}>
-                  <span className="text-xs text-[#FAFAFA]/70 hover:text-[#FAFAFA] transition-colors cursor-default">
-                    {link}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-sm font-semibold mb-4">Support</h4>
-            <ul className="space-y-2">
-              {supportLinks.map((link) => (
-                <li key={link}>
-                  <span className="text-xs text-[#FAFAFA]/70 hover:text-[#FAFAFA] transition-colors cursor-default">
-                    {link}
-                  </span>
-                </li>
-              ))}
+              <li>
+                <Link
+                  href="/study"
+                  className="text-[16px] text-[#FAFAFA]/70 hover:text-[#FAFAFA] transition-colors"
+                >
+                  기계공학
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
       </div>
 
+      <div className="h-[200px]" />
+
       <div>
-        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 xl:px-20 py-4 flex flex-col md:flex-row items-center justify-between gap-3">
-          <span className="text-xs text-[#FAFAFA]/50">©RootsDesign2020.</span>
-          <span className="text-xs text-[#FAFAFA]/50">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 xl:px-20 py-5 flex flex-col md:flex-row items-center justify-between gap-3">
+          <span className="text-[16px] text-[#FAFAFA]/50">
+            ©RootsDesign2020.
+          </span>
+          <span className="text-[16px] text-[#FAFAFA]/50">
             Privacy Policy &nbsp;|&nbsp; Terms & Conditions
           </span>
           <div className="flex items-center gap-3">
-            <FacebookIcon />
-            <span className="text-[#8A8A8A]">|</span>
-            <LinkedInIcon />
-            <span className="text-[#8A8A8A]">|</span>
-            <TwitterIcon />
-            <span className="text-[#8A8A8A]">|</span>
             <InstagramIcon />
             <span className="text-[#8A8A8A]">|</span>
             <AppleIcon />
@@ -269,6 +185,42 @@ export function Footer() {
             <YoutubeIcon />
           </div>
         </div>
+      </div>
+
+      <div className="relative overflow-hidden flex items-end justify-center h-[212px] pointer-events-none select-none">
+        <svg
+          width="1641"
+          height="212"
+          viewBox="0 0 1641 212"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="absolute bottom-[-5px]"
+        >
+          <path
+            d="M1435.17 4.70703L1499.03 111.995H1501.19L1565.49 4.70703H1638.84L1543.48 160.685L1641 316.662H1565.92L1501.19 209.374H1499.03L1434.31 316.662H1359.65L1457.61 160.685L1361.38 4.70703H1435.17Z"
+            fill="#121737"
+          />
+          <path
+            d="M1114.8 316.662V4.70703H1323.91V58.1358H1179.34V133.97H1313.15V187.399H1179.34V263.233H1324.34V316.662H1114.8Z"
+            fill="#121737"
+          />
+          <path
+            d="M851.967 4.70703L928.094 242.551H931.122L1007.68 4.70703H1079.48L971.348 316.662H887.868L779.3 4.70703H851.967Z"
+            fill="#121737"
+          />
+          <path
+            d="M406.131 4.70703H486.49L573.329 216.268H576.786L663.625 4.70703H743.984V316.662H680.907V112.426H678.314L596.659 315.369H553.456L471.801 111.565H469.208V316.662H406.131V4.70703Z"
+            fill="#121737"
+          />
+          <path
+            d="M354.335 4.70703V316.662H288.412V4.70703H354.335Z"
+            fill="#121737"
+          />
+          <path
+            d="M180.537 93.7337C177.939 69.1124 158.024 54.426 126.419 54.426C93.5154 54.426 75.3318 69.5443 74.8989 90.2781C74.466 112.74 98.2777 123.106 125.12 129.154L153.261 136.065C206.946 148.16 247.21 175.373 247.21 227.639C247.21 285.089 202.184 321.373 125.986 321.373C50.2212 321.373 1.73177 286.384 0 219.432H63.2095C65.3742 250.964 90.4848 266.947 125.12 266.947C159.323 266.947 181.403 250.964 181.403 227.639C181.403 206.473 161.92 196.538 127.718 187.899L93.5154 179.692C40.6965 166.734 8.22589 140.385 8.22589 94.5976C8.22589 37.5799 58.4471 0 126.852 0C196.123 0 242.014 38.4438 242.88 93.7337H180.537Z"
+            fill="#121737"
+          />
+        </svg>
       </div>
     </footer>
   );

@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 
 import { Loader2 } from 'lucide-react';
 
-import { Footer } from '@/components/footer';
 import { SimvexLogo } from '@/components/study-header';
 import { StudyModelCard } from '@/components/study/study-model-card';
 import { useModels } from '@/hooks/use-models';
@@ -151,8 +150,6 @@ export default function StudyPage() {
           )}
         </section>
       </div>
-
-      <Footer />
     </div>
   );
 }

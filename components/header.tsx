@@ -3,71 +3,50 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { Bot } from 'lucide-react';
-
-import { cn } from '@/lib/utils';
+import { SimvexLogo } from '@/components/study-header';
 
 const navItems = [
   { href: '/', label: 'Home' },
   { href: '/study', label: 'Study' },
-  { href: '#', label: 'CAD' },
-  { href: '#', label: 'Lab' },
 ];
 
-interface HeaderProps {
-  onCopilotClick?: () => void;
-  showCopilot?: boolean;
-}
-
-export function Header({ onCopilotClick, showCopilot = false }: HeaderProps) {
+export function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="h-[60px] bg-card border-b border-border flex items-center justify-between px-6">
-      <div className="flex items-center gap-8">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-primary glow-cyan" />
-          <span className="font-semibold text-lg tracking-tight text-foreground">
-            SIMVEX
-          </span>
+    <header className="h-[64px] bg-[#0a0f1a]/50 backdrop-blur-sm border-b border-[#595959]/30 flex items-end pl-6 pb-3">
+      <div className="flex items-end gap-0">
+        <Link href="/" className="mb-[-4px] mr-[42px]">
+          <SimvexLogo />
         </Link>
 
-        {/* Navigation */}
-        <nav className="flex items-center gap-1">
-          {navItems.map((item) => {
-            const isActive =
-              pathname === item.href ||
-              (item.href === '/study' && pathname.startsWith('/study'));
-            return (
-              <Link
-                key={item.label}
-                href={item.href}
-                className={cn(
-                  'px-4 py-1.5 rounded-full text-sm font-medium transition-colors',
+        {navItems.map((item) => {
+          const isActive =
+            pathname === item.href ||
+            (item.href === '/study' && pathname.startsWith('/study'));
+
+          return (
+            <Link
+              key={item.label}
+              href={item.href}
+              className="relative flex flex-col items-center px-8"
+            >
+              <span
+                className={`text-[18px] font-semibold tracking-wide pb-1.5 transition-colors ${
                   isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
-                )}
+                    ? 'text-[#FAFAFA]'
+                    : 'text-[#FAFAFA]/60 hover:text-[#FAFAFA]/80'
+                }`}
               >
                 {item.label}
-              </Link>
-            );
-          })}
-        </nav>
+              </span>
+              {isActive && (
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[60%] h-[2px] bg-[#2563EB] rounded-full" />
+              )}
+            </Link>
+          );
+        })}
       </div>
-
-      {/* Copilot Button */}
-      {showCopilot && onCopilotClick && (
-        <button
-          onClick={onCopilotClick}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary hover:bg-muted transition-colors text-sm"
-        >
-          <Bot className="w-4 h-4 text-primary" />
-          <span className="text-foreground">Copilot</span>
-          <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-        </button>
-      )}
     </header>
   );
 }

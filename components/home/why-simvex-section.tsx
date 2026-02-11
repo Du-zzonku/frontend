@@ -13,7 +13,7 @@ export function WhySimvexSection() {
         />
       </div>
 
-      <div className="relative z-10 flex flex-col justify-center min-h-screen px-6 sm:px-12 md:px-20 lg:px-24 xl:px-32 max-w-[900px]">
+      <div className="relative z-10 flex flex-col justify-center min-h-screen px-6 sm:px-12 md:px-20 lg:px-[200px] xl:px-[260px] 2xl:px-[320px] max-w-[1200px]">
         <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#2563EB] tracking-tight mb-6">
           WHY SIMVEX?
         </h2>

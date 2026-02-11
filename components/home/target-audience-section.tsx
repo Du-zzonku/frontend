@@ -24,7 +24,7 @@ const audiences = [
 export function TargetAudienceSection() {
   return (
     <section className="relative w-full min-h-screen bg-[#070B14] flex flex-col items-center justify-center px-4 sm:px-6 py-20">
-      <div className="text-center mb-10 md:mb-16">
+      <div className="text-center mb-16 md:mb-[160px]">
         <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.5rem] font-bold text-[#FAFAFA] mb-4 leading-tight">
           이런 분들을 위해 만들었어요
         </h2>
@@ -34,7 +34,7 @@ export function TargetAudienceSection() {
         </p>
       </div>
 
-      <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
+      <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10 xl:gap-[160px]">
         {audiences.map((audience) => (
           <div
             key={audience.bold}

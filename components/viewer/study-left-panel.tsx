@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { X } from 'lucide-react';
 
@@ -9,7 +9,6 @@ import {
   PDFIcon,
   QuizQIcon,
   RobotIcon,
-  SettingsIcon,
 } from '@/components/icons/sidebar-icons';
 import { cn } from '@/lib/utils';
 import type { ModelPart, ViewerModel } from '@/types/viewer';
@@ -134,12 +133,6 @@ export function StudyLeftPanel({
               </button>
             );
           })}
-        </div>
-
-        <div className="flex flex-col items-center pb-[16px]">
-          <button className="w-4 h-4 flex items-center justify-center transition-colors">
-            <SettingsIcon className="w-4 h-4 text-[#717271] hover:text-[#999]" />
-          </button>
         </div>
       </div>
 

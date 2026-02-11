@@ -55,7 +55,7 @@ function HeroSection() {
           href="/study"
           className="inline-flex items-center px-8 py-3 rounded-full border border-[#FAFAFA]/40 text-[#FAFAFA] text-base font-medium hover:bg-[#FAFAFA]/10 transition-colors"
         >
-          3D 구조를 둘러보기
+          3D 구조물 둘러보기
         </Link>
       </div>
     </section>
